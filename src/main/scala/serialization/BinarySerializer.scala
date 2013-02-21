@@ -12,19 +12,17 @@ object DefaultSerializers {
     StringSerializer.identifier -> new StringSerializer,
     LongSerializer.identifier -> new LongSerializer)
 
-  def serializerFor[T](obj: T): BinarySerializer[T] = {
+  def serializerFor[T](obj: T): Option[BinarySerializer[T]] = {
     require(obj != null)
-    if (obj.getClass == classOf[String]) {
-      return (new StringSerializer).asInstanceOf[BinarySerializer[T]]
-    } else if (obj.getClass == classOf[java.lang.Long]) {
-      return (new LongSerializer).asInstanceOf[BinarySerializer[T]]
-    } else {
-      throw new IllegalArgumentException("No serializer exists for class " + obj.getClass)
-    }
+    if (obj.getClass == classOf[String])
+      Some((new StringSerializer).asInstanceOf[BinarySerializer[T]])
+    else if (obj.getClass == classOf[java.lang.Long])
+      Some((new LongSerializer).asInstanceOf[BinarySerializer[T]])
+    else None
   }
 
-  def serializerForId(id: Int): BinarySerializer[_] = {
-    serializers(id)
+  def serializerForId(id: Int): Option[BinarySerializer[_]] = {
+    serializers.get(id)
   }
 
   class StringSerializer extends BinarySerializer[String] {

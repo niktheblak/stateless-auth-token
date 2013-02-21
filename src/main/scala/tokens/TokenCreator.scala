@@ -10,7 +10,6 @@ import base58.Base58
 import serialization.{InvalidDataException, FieldEncoder}
 
 trait TokenCreator {
-  import FieldEncoder.StringSerializer
   val header = "AUTH-TOKEN"
   val version = "1.0"
   val keyFactory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1")
