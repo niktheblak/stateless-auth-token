@@ -7,6 +7,7 @@ import javax.crypto.spec.PBEKeySpec
 import javax.crypto.SecretKeyFactory
 import java.util.Arrays
 import base58.Base58
+import serialization.{InvalidDataException, FieldEncoder}
 
 trait TokenCreator {
   import FieldEncoder.StringSerializer
@@ -61,7 +62,7 @@ trait TokenCreator {
   def encodeToken(userId: String, role: String, expirationTime: Long): Array[Byte] = {
     require(userId.length <= Byte.MaxValue, "Too long userId")
     require(role.length <= Byte.MaxValue, "Too long role")
-    val payload = FieldEncoder.encode(Seq(userId, role, expirationTime.toString))
+    val payload = FieldEncoder.encode(Seq(userId, role, expirationTime))
     headerBytes ++ versionBytes ++ payload
   }
   
@@ -72,14 +73,13 @@ trait TokenCreator {
     }
     val version = tokenData.slice(headerBytes.length, versionBytes.length)
     val payload = tokenData.slice(headerBytes.length + versionBytes.length, tokenData.length)
-    val fields: Seq[String] = FieldEncoder.decode(payload)
+    val fields: Seq[Any] = FieldEncoder.decode(payload)
     if (fields.length != 3) {
       throw new InvalidDataException("Malformed content");
     }
-    val userId = fields(0)
-    val role = fields(1)
-    val expirationTimeString = fields(2)
-    val expirationTime = java.lang.Long.parseLong(expirationTimeString)
+    val userId = fields(0).asInstanceOf[String]
+    val role = fields(1).asInstanceOf[String]
+    val expirationTime = fields(2).asInstanceOf[Long]
     Authentication(userId, role, expirationTime)
   }
 }
