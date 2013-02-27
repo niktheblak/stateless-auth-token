@@ -7,7 +7,22 @@ trait BinarySerializer[T] {
   def deSerialize(data: Array[Byte]): T
 }
 
-object DefaultSerializers {
+trait BitOps {
+  def pack(id: Int, size: Int): Int = {
+    require(id <= 3, "id must be smaller than 4")
+    require(size <= 63, "size must be smaller than 64")
+    val packed = ((id & 0x3) << 6) | (size & 0x3F)
+    packed
+  }
+
+  def unpack(x: Int): (Int, Int) = {
+    val id = x >> 6
+    val size = x & 0x3F
+    (id, size)
+  }
+}
+
+object DefaultSerializers extends BitOps {
   private val serializers: Map[Int, BinarySerializer[_]] = Map(
     StringSerializer.identifier -> new StringSerializer,
     LongSerializer.identifier -> new LongSerializer)
@@ -27,13 +42,17 @@ object DefaultSerializers {
 
   class StringSerializer extends BinarySerializer[String] {
     import StringSerializer.identifier
-    def serialize(obj: String): Array[Byte] =
-      Array(identifier.toByte) ++ obj.getBytes("UTF-8")
+
+    def serialize(obj: String): Array[Byte] = {
+      val bytes = obj.getBytes("UTF-8")
+      val idAndSize = pack(identifier, bytes.length)
+      Array(idAndSize.toByte) ++ bytes
+    }
 
     def deSerialize(data: Array[Byte]): String = {
-      val id = data(0)
+      val (id, size) = unpack(data(0))
       require(id == identifier, "Serial ID %d does not match expected %d".format(id, identifier))
-      new String(data.slice(1, data.length), "UTF-8")
+      new String(data, 1, size, "UTF-8")
     }
   }
 
@@ -41,25 +60,25 @@ object DefaultSerializers {
     val identifier = 0
   }
 
-  class LongSerializer extends BinarySerializer[Long] {
+  class LongSerializer extends BinarySerializer[Long] with BitOps {
     import LongSerializer.identifier
     def serialize(value: Long): Array[Byte] = {
       if (value < Byte.MaxValue) {
-        val buf = ByteBuffer.allocate(3)
-        buf.put(identifier.toByte)
-        buf.put(1.toByte)
+        val buf = ByteBuffer.allocate(2)
+        val idAndSize = pack(identifier, 1).toByte
+        buf.put(idAndSize)
         buf.put(value.toByte)
         buf.array()
       } else if (value < Int.MaxValue) {
-        val buf = ByteBuffer.allocate(6)
-        buf.put(identifier.toByte)
-        buf.put(4.toByte)
+        val buf = ByteBuffer.allocate(5)
+        val idAndSize = pack(identifier, 4).toByte
+        buf.put(idAndSize)
         buf.putInt(value.toInt)
         buf.array()
       } else {
-        val buf = ByteBuffer.allocate(10)
-        buf.put(identifier.toByte)
-        buf.put(8.toByte)
+        val buf = ByteBuffer.allocate(9)
+        val idAndSize = pack(identifier, 8).toByte
+        buf.put(idAndSize)
         buf.putLong(value)
         buf.array()
       }
@@ -69,9 +88,9 @@ object DefaultSerializers {
       val buf = ByteBuffer.allocate(data.length)
       buf.put(data)
       buf.rewind()
-      val id = buf.get()
+      val idAndSize = buf.get()
+      val (id, size) = unpack(idAndSize)
       require(id == identifier, "Serial ID %d does not match expected %d".format(id, identifier))
-      val size = buf.get()
       size match {
         case 1 => buf.get().toLong
         case 4 =>
