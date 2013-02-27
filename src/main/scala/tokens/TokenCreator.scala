@@ -8,6 +8,7 @@ import javax.crypto.SecretKeyFactory
 import java.util.Arrays
 import base58.Base58
 import serialization.{InvalidDataException, FieldEncoder}
+import java.nio.ByteBuffer
 
 trait TokenCreator {
   val header = "AUTH-TOKEN"
@@ -61,7 +62,12 @@ trait TokenCreator {
   def encodeToken(userId: String, role: String, expirationTime: Long): Array[Byte] = {
     require(userId.length <= Byte.MaxValue, "Too long userId")
     require(role.length <= Byte.MaxValue, "Too long role")
-    val payload = FieldEncoder.encode(Seq(userId, role, expirationTime))
+    val items = Seq(userId, role, expirationTime)
+    val buf = ByteBuffer.allocate(1024)
+    FieldEncoder.encode(items, buf)
+    val payload = new Array[Byte](buf.position())
+    buf.rewind()
+    buf.get(payload)
     headerBytes ++ versionBytes ++ payload
   }
   
@@ -70,8 +76,9 @@ trait TokenCreator {
     if (!Arrays.equals(header, headerBytes)) {
       throw new InvalidDataException("Authentication token header not found");
     }
-    val version = tokenData.slice(headerBytes.length, versionBytes.length)
-    val payload = tokenData.slice(headerBytes.length + versionBytes.length, tokenData.length)
+    // val version = tokenData.slice(headerBytes.length, versionBytes.length)
+    val payloadStart = headerBytes.length + versionBytes.length
+    val payload = ByteBuffer.wrap(tokenData, payloadStart, tokenData.length - payloadStart)
     val fields: Seq[Any] = FieldEncoder.decode(payload)
     if (fields.length != 3) {
       throw new InvalidDataException("Malformed content");
