@@ -5,7 +5,7 @@ import javax.crypto.spec.IvParameterSpec
 import javax.crypto.Cipher
 import javax.crypto.spec.PBEKeySpec
 import javax.crypto.SecretKeyFactory
-import java.util.Arrays
+import java.util.{Date, Arrays}
 import base58.Base58
 import serialization.{InvalidDataException, FieldEncoder}
 
@@ -22,7 +22,7 @@ trait TokenCreator {
   def versionBytes = version.getBytes(encodingCharset)
     
   def createAuthToken(auth: Authentication): String = {
-    val tokenData = encodeToken(auth.userId, auth.role, auth.expirationTime)
+    val tokenData = encodeToken(auth.userId, auth.role, auth.expirationTime.getTime)
     val (iv, encrypted) = encrypt(tokenData, salt)
     val tokenWithIv = iv ++ encrypted
     Base58.encode(tokenWithIv)
@@ -79,6 +79,6 @@ trait TokenCreator {
     val userId = fields(0).asInstanceOf[String]
     val role = fields(1).asInstanceOf[String]
     val expirationTime = fields(2).asInstanceOf[Long]
-    Authentication(userId, role, expirationTime)
+    Authentication(userId, role, new Date(expirationTime))
   }
 }

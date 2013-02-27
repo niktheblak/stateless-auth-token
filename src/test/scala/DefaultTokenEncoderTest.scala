@@ -8,7 +8,7 @@ class DefaultTokenEncoderTest extends FlatSpec with ShouldMatchers {
   "DefaultTokenEncoder" should "encode and decode token" in {
     val expTime = Calendar.getInstance()
     expTime.add(Calendar.HOUR_OF_DAY, 1)
-    val auth = Authentication("testUser", "testRole", expTime.getTimeInMillis())
+    val auth = Authentication("testUser", "testRole", expTime.getTime)
     val token = createAuthToken(auth)
     val decoded = decodeAuthToken(token)
     decoded should equal(auth)
