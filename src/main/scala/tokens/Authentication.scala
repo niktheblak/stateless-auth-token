@@ -1,3 +1,5 @@
 package tokens
 
-case class Authentication(userId: String, role: String, expirationTime: Long)
+import java.util.Date
+
+case class Authentication(userId: String, role: String, expirationTime: Date)
