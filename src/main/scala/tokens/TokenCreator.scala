@@ -5,12 +5,11 @@ import javax.crypto.spec.IvParameterSpec
 import javax.crypto.Cipher
 import javax.crypto.spec.PBEKeySpec
 import javax.crypto.SecretKeyFactory
-import java.util.{Date, Arrays}
 import base58.Base58
-import serialization.{InvalidDataException, FieldEncoder}
-import java.nio.ByteBuffer
+import java.util.Arrays
+import serialization.InvalidDataException
 
-trait TokenCreator {
+trait TokenCreator extends FieldEncoderTokenEncoder {
   val header = "AUTH-TOKEN"
   val version = "1.0"
   val keyFactory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1")
@@ -23,8 +22,9 @@ trait TokenCreator {
   def versionBytes = version.getBytes(encodingCharset)
     
   def createAuthToken(auth: Authentication): String = {
-    val tokenData = encodeToken(auth.userId, auth.role, auth.expirationTime.getTime)
-    val (iv, encrypted) = encrypt(tokenData, salt)
+    val tokenData = encodeToken(auth)
+    val payload = headerBytes ++ versionBytes ++ tokenData
+    val (iv, encrypted) = encrypt(payload, salt)
     val tokenWithIv = iv ++ encrypted
     Base58.encode(tokenWithIv)
   }
@@ -32,9 +32,19 @@ trait TokenCreator {
   def decodeAuthToken(tokenString: String): Authentication = {
     val base58 = Base58.decode(tokenString)
     val iv = base58.slice(0, 16)
-    val tokenData = base58.slice(16, base58.length)
-    val decrypted = decrypt(iv, tokenData, salt)
-    decodeToken(decrypted)
+    val encryptedTokenData = base58.slice(16, base58.length)
+    val decrypted = decrypt(iv, encryptedTokenData, salt)
+    val header = decrypted.slice(0, headerBytes.length)
+    if (!Arrays.equals(header, headerBytes)) {
+      throw new InvalidDataException("Authentication token header not found");
+    }
+    val version = decrypted.slice(headerBytes.length, headerBytes.length + versionBytes.length)
+    if (!Arrays.equals(version, versionBytes)) {
+      throw new InvalidDataException("Unsupported version " + new String(version, encodingCharset));
+    }
+    val payloadStart = headerBytes.length + versionBytes.length
+    val tokenData = decrypted.slice(payloadStart, decrypted.length)
+    decodeToken(tokenData)
   }
   
   def encrypt(data: Array[Byte], salt: Array[Byte]): (Array[Byte], Array[Byte]) = {
@@ -57,35 +67,5 @@ trait TokenCreator {
     val cipher = Cipher.getInstance("AES/CBC/PKCS5Padding")
     cipher.init(Cipher.DECRYPT_MODE, secret, new IvParameterSpec(iv))
     cipher.doFinal(data)
-  }
-  
-  def encodeToken(userId: String, role: String, expirationTime: Long): Array[Byte] = {
-    require(userId.length <= Byte.MaxValue, "Too long userId")
-    require(role.length <= Byte.MaxValue, "Too long role")
-    val items = Seq(userId, role, expirationTime)
-    val buf = ByteBuffer.allocate(1024)
-    FieldEncoder.encode(items, buf)
-    val payload = new Array[Byte](buf.position())
-    buf.rewind()
-    buf.get(payload)
-    headerBytes ++ versionBytes ++ payload
-  }
-  
-  def decodeToken(tokenData: Array[Byte]): Authentication = {
-    val header = tokenData.slice(0, headerBytes.length)
-    if (!Arrays.equals(header, headerBytes)) {
-      throw new InvalidDataException("Authentication token header not found");
-    }
-    // val version = tokenData.slice(headerBytes.length, versionBytes.length)
-    val payloadStart = headerBytes.length + versionBytes.length
-    val payload = ByteBuffer.wrap(tokenData, payloadStart, tokenData.length - payloadStart)
-    val fields: Seq[Any] = FieldEncoder.decode(payload)
-    if (fields.length != 3) {
-      throw new InvalidDataException("Malformed content");
-    }
-    val userId = fields(0).asInstanceOf[String]
-    val role = fields(1).asInstanceOf[String]
-    val expirationTime = fields(2).asInstanceOf[Long]
-    Authentication(userId, role, new Date(expirationTime))
   }
 }
