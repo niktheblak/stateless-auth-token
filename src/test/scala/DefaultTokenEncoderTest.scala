@@ -10,6 +10,7 @@ class DefaultTokenEncoderTest extends FlatSpec with ShouldMatchers {
     expTime.add(Calendar.HOUR_OF_DAY, 1)
     val auth = Authentication("testUser", "testRole", expTime.getTime)
     val token = createAuthToken(auth)
+    println("Authentication token length: " + token.length)
     val decoded = decodeAuthToken(token)
     decoded should equal(auth)
   }

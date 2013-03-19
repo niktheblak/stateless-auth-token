@@ -18,23 +18,25 @@ trait TokenCreator extends FieldEncoderTokenEncoder with AESSharedKeyEncrypter {
   def createAuthToken(auth: Authentication): String = {
     val tokenData = encodeToken(auth)
     val payload = headerBytes ++ versionBytes ++ tokenData
-    val encrypted = encrypt(payload, salt)
+    val encrypted = encrypt(payload, passPhrase.toCharArray, salt)
     Base58.encode(encrypted)
   }
   
   def decodeAuthToken(tokenString: String): Authentication = {
     val encryptedTokenData = Base58.decode(tokenString)
-    val decryptedTokenData = decrypt(encryptedTokenData, salt)
+    val decryptedTokenData = decrypt(encryptedTokenData, passPhrase.toCharArray, salt)
     val header = decryptedTokenData.slice(0, headerBytes.length)
-    if (!Arrays.equals(header, headerBytes)) {
-      throw new InvalidDataException("Authentication token header not found");
-    }
+    checkData(headerBytes, header, "Authentication token header not found")
     val version = decryptedTokenData.slice(headerBytes.length, headerBytes.length + versionBytes.length)
-    if (!Arrays.equals(version, versionBytes)) {
-      throw new InvalidDataException("Unsupported version " + new String(version, encodingCharset));
-    }
+    checkData(versionBytes, version, "Unsupported version " + new String(version, encodingCharset))
     val payloadStart = headerBytes.length + versionBytes.length
     val tokenData = decryptedTokenData.slice(payloadStart, decryptedTokenData.length)
     decodeToken(tokenData)
+  }
+
+  def checkData(expected: Array[Byte], actual: Array[Byte], message: String) {
+    if (!Arrays.equals(expected, actual)) {
+      throw new InvalidDataException(message);
+    }
   }
 }
