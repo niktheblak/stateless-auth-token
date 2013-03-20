@@ -1,8 +1,8 @@
 package tokens
 
 import base58.Base58
-import java.util.Arrays
 import serialization.InvalidDataException
+import utils.ByteBuffers.{toBytes, read}
 import java.nio.ByteBuffer
 
 trait TokenCreator extends FieldEncoderTokenEncoder with AESSharedKeyEncrypter {
@@ -26,29 +26,25 @@ trait TokenCreator extends FieldEncoderTokenEncoder with AESSharedKeyEncrypter {
     encrypt(tokenData, passPhrase.toCharArray, salt, encryptedToken)
     Base58.encode(toBytes(encryptedToken))
   }
-
-  def toBytes(buf: ByteBuffer): Array[Byte] = {
-    val bytes = new Array[Byte](buf.position)
-    buf.rewind()
-    buf.get(bytes)
-    bytes
-  }
   
   def decodeAuthToken(tokenString: String): Authentication = {
     val encryptedTokenData = Base58.decode(tokenString)
-    val decryptedTokenData = decrypt(encryptedTokenData, passPhrase.toCharArray, salt)
-    val header = decryptedTokenData.slice(0, headerBytes.length)
+    val encrypted = ByteBuffer.wrap(encryptedTokenData)
+    val decrypted = ByteBuffer.allocate(256)
+    decrypt(encrypted, passPhrase.toCharArray, salt, decrypted)
+    decrypted.limit(decrypted.position())
+    decrypted.rewind()
+    val header = read(decrypted, headerBytes.length)
     checkData(headerBytes, header, "Authentication token header not found")
-    val version = decryptedTokenData.slice(headerBytes.length, headerBytes.length + versionBytes.length)
+    val version = read(decrypted, versionBytes.length)
     checkData(versionBytes, version, "Unsupported version " + new String(version, encodingCharset))
-    val payloadStart = headerBytes.length + versionBytes.length
-    val tokenData = decryptedTokenData.slice(payloadStart, decryptedTokenData.length)
+    val tokenData = read(decrypted, decrypted.remaining())
     decodeToken(tokenData)
   }
 
   def checkData(expected: Array[Byte], actual: Array[Byte], message: String) {
-    if (!Arrays.equals(expected, actual)) {
-      throw new InvalidDataException(message);
+    if (!java.util.Arrays.equals(expected, actual)) {
+      throw new InvalidDataException(message)
     }
   }
 }
