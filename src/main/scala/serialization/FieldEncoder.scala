@@ -8,7 +8,7 @@ object FieldEncoder extends BitOps {
     items foreach { item =>
       DefaultSerializers.serializerFor(item) match {
         case Some(serializer) => serializer.serialize(item, target)
-        case None => throw new IllegalArgumentException("No serializer found for class " + item.getClass)
+        case None ⇒ throw new IllegalArgumentException("No serializer found for class " + item.getClass)
       }
     }
   }
@@ -25,10 +25,10 @@ object FieldEncoder extends BitOps {
     val (id, _) = unpack(source.get())
     source.position(source.position() - 1)
     DefaultSerializers.serializerForId(id) match {
-      case Some(serializer) =>
+      case Some(serializer) ⇒
         val value = serializer.deSerialize(source)
         value.asInstanceOf[T]
-      case None => throw new IllegalArgumentException("No serializer found for serial ID " + id)
+      case None ⇒ throw new IllegalArgumentException("No serializer found for serial ID " + id)
     }
   }
 }

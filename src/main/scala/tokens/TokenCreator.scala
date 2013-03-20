@@ -2,7 +2,7 @@ package tokens
 
 import base58.Base58
 import serialization.InvalidDataException
-import utils.ByteBuffers.{toBytes, read}
+import utils.ByteBuffers.{toByteArray, read}
 import java.nio.ByteBuffer
 
 trait TokenCreator extends FieldEncoderTokenEncoder with AESSharedKeyEncrypter {
@@ -24,7 +24,7 @@ trait TokenCreator extends FieldEncoderTokenEncoder with AESSharedKeyEncrypter {
     tokenData.rewind()
     val encryptedToken = ByteBuffer.allocate(256)
     encrypt(tokenData, passPhrase.toCharArray, salt, encryptedToken)
-    Base58.encode(toBytes(encryptedToken))
+    Base58.encode(toByteArray(encryptedToken))
   }
   
   def decodeAuthToken(tokenString: String): Authentication = {
