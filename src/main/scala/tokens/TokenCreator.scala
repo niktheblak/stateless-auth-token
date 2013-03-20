@@ -38,8 +38,7 @@ trait TokenCreator extends FieldEncoderTokenEncoder with AESSharedKeyEncrypter {
     checkData(headerBytes, header, "Authentication token header not found")
     val version = read(decrypted, versionBytes.length)
     checkData(versionBytes, version, "Unsupported version " + new String(version, encodingCharset))
-    val tokenData = read(decrypted, decrypted.remaining())
-    decodeToken(tokenData)
+    decodeToken(decrypted)
   }
 
   def checkData(expected: Array[Byte], actual: Array[Byte], message: String) {
