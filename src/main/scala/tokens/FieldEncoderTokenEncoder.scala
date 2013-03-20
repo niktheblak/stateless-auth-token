@@ -5,16 +5,11 @@ import serialization.{InvalidDataException, FieldEncoder}
 import java.util.Date
 
 trait FieldEncoderTokenEncoder {
-  def encodeToken(auth: Authentication): Array[Byte] = {
+  def encodeToken(auth: Authentication, buffer: ByteBuffer) {
     require(auth.userId.length <= Byte.MaxValue, "Too long userId")
     require(auth.role.length <= Byte.MaxValue, "Too long role")
     val items = Seq(auth.userId, auth.role, auth.expirationTime.getTime)
-    val buf = ByteBuffer.allocate(1024)
-    FieldEncoder.encode(items, buf)
-    val payload = new Array[Byte](buf.position())
-    buf.rewind()
-    buf.get(payload)
-    payload
+    FieldEncoder.encode(items, buffer)
   }
 
   def decodeToken(tokenData: Array[Byte]): Authentication = {
