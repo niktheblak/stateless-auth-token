@@ -1,9 +1,9 @@
 import tokens._
-import DefaultTokenEncoder._
+import DefaultTokenCreator._
 import java.util.Calendar
 
 object CLI extends App {
-  println("Salt: " + new String(DefaultTokenEncoder.salt, "US-ASCII"))
+  println("Salt: " + new String(DefaultTokenCreator.salt, "US-ASCII"))
   val expTime = Calendar.getInstance()
   expTime.add(Calendar.HOUR_OF_DAY, 1)
   val token = createAuthToken(Authentication("testUser", "testRole", expTime.getTime))

@@ -1,7 +1,7 @@
 import java.net.{UnknownHostException, InetAddress}
 import tokens._
 
-object DefaultTokenEncoder extends TokenCreator with PickleTokenEncoder {
+object DefaultTokenCreator extends TokenCreator with PickleTokenEncoder {
   val passPhrase = "^YS5Fe>8L@37E513U:69^6*UNY{?"
   val salt = generateSaltFromHostName
 
