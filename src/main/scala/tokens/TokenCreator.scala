@@ -5,7 +5,7 @@ import serialization.InvalidDataException
 import utils.ByteBuffers.{toByteArray, read}
 import java.nio.ByteBuffer
 
-trait TokenCreator extends FieldEncoderTokenEncoder with AESSharedKeyEncrypter {
+trait TokenCreator extends AESSharedKeyEncrypter { self: TokenEncoder =>
   val header = "AUTH-TOKEN"
   val version = "1.0"
   val encodingCharset = "UTF-8"

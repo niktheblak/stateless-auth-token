@@ -4,7 +4,7 @@ import java.nio.ByteBuffer
 import serialization.{InvalidDataException, FieldEncoder}
 import java.util.Date
 
-trait FieldEncoderTokenEncoder {
+trait FieldEncoderTokenEncoder extends TokenEncoder {
   def encodeToken(auth: Authentication, buffer: ByteBuffer) {
     require(auth.userId.length <= Byte.MaxValue, "Too long userId")
     require(auth.role.length <= Byte.MaxValue, "Too long role")
