@@ -3,7 +3,9 @@ package serialization
 import org.scalatest.matchers.ShouldMatchers
 import org.scalatest.FlatSpec
 
-class BitOpsTest extends BitOps with FlatSpec with ShouldMatchers {
+class BitOpsTest extends FlatSpec with ShouldMatchers {
+  import BitOps._
+
   "BitOps" should "pack two bytes correctly" in {
     val packed = pack(2, 0x2B)
     packed should equal(0xAB)

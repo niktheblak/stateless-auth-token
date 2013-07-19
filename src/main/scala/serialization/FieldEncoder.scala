@@ -3,7 +3,9 @@ package serialization
 import scala.collection.mutable.ListBuffer
 import java.nio.ByteBuffer
 
-object FieldEncoder extends BitOps {
+object FieldEncoder {
+  import BitOps._
+
   def encode[T](items: Seq[T], target: ByteBuffer) {
     items foreach { item =>
       DefaultSerializers.serializerFor(item) match {

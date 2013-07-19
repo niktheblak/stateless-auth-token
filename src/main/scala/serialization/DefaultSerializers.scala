@@ -3,7 +3,7 @@ package serialization
 import java.nio.ByteBuffer
 import utils.ByteBuffers
 
-object DefaultSerializers extends BitOps {
+object DefaultSerializers {
   private val serializers: Map[Int, BinarySerializer[_]] = Map(
     StringSerializer.identifier -> new StringSerializer,
     LongSerializer.identifier -> new LongSerializer)
@@ -22,6 +22,7 @@ object DefaultSerializers extends BitOps {
   }
 
   class StringSerializer extends BinarySerializer[String] {
+    import BitOps._
     import StringSerializer.identifier
 
     def serialize(obj: String, target: ByteBuffer) {
@@ -43,8 +44,10 @@ object DefaultSerializers extends BitOps {
     val identifier = 0
   }
 
-  class LongSerializer extends BinarySerializer[Long] with BitOps {
+  class LongSerializer extends BinarySerializer[Long] {
+    import BitOps._
     import LongSerializer.identifier
+
     def serialize(value: Long, target: ByteBuffer) {
       if (value < Byte.MaxValue) {
         val idAndSize = pack(identifier, 1).toByte
