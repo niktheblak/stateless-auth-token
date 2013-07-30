@@ -4,7 +4,7 @@ import scala.collection.mutable.ListBuffer
 import java.nio.ByteBuffer
 
 object FieldEncoder {
-  import BitOps._
+  import BinaryUtils._
 
   def encode[T](items: Seq[T], target: ByteBuffer) {
     items foreach { item =>

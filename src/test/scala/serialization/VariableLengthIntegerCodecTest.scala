@@ -2,7 +2,7 @@ package serialization
 
 import org.scalatest.FunSpec
 import org.scalatest.matchers.ShouldMatchers
-import BitOps._
+import BinaryUtils._
 import scala.util.Random
 
 class VariableLengthIntegerCodecTest extends FunSpec with ShouldMatchers {

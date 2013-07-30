@@ -22,7 +22,7 @@ object DefaultSerializers {
   }
 
   class StringSerializer extends BinarySerializer[String] {
-    import BitOps._
+    import BinaryUtils._
     import StringSerializer.identifier
 
     def serialize(obj: String, target: ByteBuffer) {
@@ -45,7 +45,7 @@ object DefaultSerializers {
   }
 
   class LongSerializer extends BinarySerializer[Long] {
-    import BitOps._
+    import BinaryUtils._
     import LongSerializer.identifier
 
     def serialize(value: Long, target: ByteBuffer) {

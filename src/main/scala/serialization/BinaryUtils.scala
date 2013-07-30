@@ -1,6 +1,6 @@
 package serialization
 
-object BitOps {
+object BinaryUtils {
   def pack(id: Int, size: Int): Int = {
     require(id <= 3, "id must be smaller than 4")
     require(size <= 63, "size must be smaller than 64")
