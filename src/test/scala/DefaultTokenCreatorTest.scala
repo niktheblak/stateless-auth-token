@@ -11,6 +11,9 @@ class DefaultTokenCreatorTest extends FlatSpec with ShouldMatchers {
     val token = DefaultTokenCreator.createAuthToken(auth)
     println("Authentication token length: " + token.length)
     val decoded = DefaultTokenCreator.decodeAuthToken(token)
+    decoded.userId should equal(auth.userId)
+    decoded.role should equal(auth.role)
+    decoded.expirationTime should equal(auth.expirationTime)
     decoded should equal(auth)
   }
 }

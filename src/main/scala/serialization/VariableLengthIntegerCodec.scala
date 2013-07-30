@@ -1,5 +1,7 @@
 package serialization
 
+import java.nio.ByteBuffer
+
 object VariableLengthIntegerCodec {
   val maxBlocks = 8
 
@@ -12,6 +14,10 @@ object VariableLengthIntegerCodec {
       buf(buf.length - i - 1) = payload.toByte
     }
     buf.dropWhile(_ == -128)
+  }
+
+  def encode(x: Long, target: ByteBuffer) {
+    target.put(encode(x))
   }
 
   def decode(data: Array[Byte]): Long = {
@@ -35,6 +41,22 @@ object VariableLengthIntegerCodec {
     }
     require((data(i) & 0x80) == 0)
     result = (result << 7) | data(i)
+    result
+  }
+
+  def decode(data: ByteBuffer): Long = {
+    var result = 0L
+    var i = 0
+    var b = data.get()
+    while ((b & 0x80) != 0) {
+      require(i <= maxBlocks, "Encoded number is too long")
+      val payload = b & 0x7F
+      result = (result << 7) | payload
+      i = i + 1
+      b = data.get()
+    }
+    require((b & 0x80) == 0)
+    result = (result << 7) | b
     result
   }
 }
