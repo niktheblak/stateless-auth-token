@@ -23,4 +23,18 @@ object VariableLengthIntegerCodec {
     }
     result
   }
+
+  def decode(data: Array[Byte], offset: Int): Long = {
+    var i = offset
+    var result = 0L
+    while (i < data.length && (data(i) & 0x80) != 0) {
+      require(i <= maxBlocks, "Encoded number is too long")
+      val payload = data(i) & 0x7F
+      result = (result << 7) | payload
+      i = i + 1
+    }
+    require((data(i) & 0x80) == 0)
+    result = (result << 7) | data(i)
+    result
+  }
 }

@@ -19,7 +19,7 @@ class VariableLengthIntegerCodecTest extends FunSpec with ShouldMatchers {
 
     it("should decode Wikipedia example number correctly") {
       val arr = Array(toUnsignedByte(129), toUnsignedByte(9))
-      val x = decode(arr)
+      val x = decode(arr, 0)
       x should equal(137)
     }
 
@@ -36,7 +36,7 @@ class VariableLengthIntegerCodecTest extends FunSpec with ShouldMatchers {
     it("should roundtrip encode random numbers correctly") {
       val numbers = randomNumbers.take(1000)
       numbers foreach { n ⇒
-        decode(encode(n)) should equal(n)
+        decode(encode(n), 0) should equal(n)
       }
     }
 
