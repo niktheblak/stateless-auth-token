@@ -7,7 +7,8 @@ object CLI extends App {
   val expTime = Calendar.getInstance()
   expTime.add(Calendar.HOUR_OF_DAY, 1)
   val token = createAuthToken(Authentication("testUser", "testRole", expTime.getTime))
-  println(token)
+  println(s"Token length: ${token.size} bytes")
+  println(s"Token: $token")
   val decoded = decodeAuthToken(token)
   println(decoded)
 }
