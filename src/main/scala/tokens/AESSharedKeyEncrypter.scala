@@ -7,7 +7,7 @@ import java.nio.ByteBuffer
 trait AESSharedKeyEncrypter {
   val keyFactory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1")
 
-  def encrypt(data: ByteBuffer, password: Array[Char], salt: Array[Byte], output: ByteBuffer) {
+  def encrypt(data: Array[Byte], password: Array[Char], salt: Array[Byte]): Array[Byte] = {
     require(salt.length > 0)
     val spec = new PBEKeySpec(password, salt, 65536, 128)
     val tmp = keyFactory.generateSecret(spec)
@@ -17,18 +17,17 @@ trait AESSharedKeyEncrypter {
     val params = cipher.getParameters
     val iv = params.getParameterSpec(classOf[IvParameterSpec]).getIV
     assert(iv.length == 16)
-    output.put(iv)
-    cipher.doFinal(data, output)
+    iv ++ cipher.doFinal(data)
   }
 
-  def decrypt(encrypted: ByteBuffer, password: Array[Char], salt: Array[Byte], output: ByteBuffer) {
-    val iv = new Array[Byte](16)
-    encrypted.get(iv)
+  def decrypt(encrypted: Array[Byte], password: Array[Char], salt: Array[Byte]): Array[Byte] = {
+    val iv = encrypted.slice(0, 16)
     val spec = new PBEKeySpec(password, salt, 65536, 128)
     val tmp = keyFactory.generateSecret(spec)
     val secret = new SecretKeySpec(tmp.getEncoded, "AES")
     val cipher = Cipher.getInstance("AES/CBC/PKCS5Padding")
     cipher.init(Cipher.DECRYPT_MODE, secret, new IvParameterSpec(iv))
-    cipher.doFinal(encrypted, output)
+    val payload = encrypted.slice(16, encrypted.size)
+    cipher.doFinal(payload)
   }
 }

@@ -1,11 +1,7 @@
 package tokens
 
 import java.util.zip.{Inflater, Deflater}
-import java.nio.ByteBuffer
-import utils.ByteBuffers
 import base58.Base58
-import utils.ByteBuffers._
-import tokens.Authentication
 import serialization.InvalidDataException
 
 trait CompressingTokenCreator extends AESSharedKeyEncrypter { self: TokenEncoder ⇒
@@ -19,31 +15,23 @@ trait CompressingTokenCreator extends AESSharedKeyEncrypter { self: TokenEncoder
   def salt: Array[Byte]
 
   def createAuthToken(auth: Authentication): String = {
-    val tokenData = ByteBuffer.allocate(256)
-    tokenData.put(headerBytes)
-    tokenData.put(versionBytes)
-    encodeToken(auth, tokenData)
-    tokenData.limit(tokenData.position)
-    tokenData.rewind()
-    val encryptedToken = ByteBuffer.allocate(256)
-    encrypt(tokenData, passPhrase.toCharArray, salt, encryptedToken)
-    val deflated = compress(encryptedToken)
+    val tokenData = headerBytes ++ versionBytes ++ encodeToken(auth)
+    val encrypted = encrypt(tokenData, passPhrase.toCharArray, salt)
+    val deflated = compress(encrypted)
     Base58.encode(deflated)
   }
 
   def decodeAuthToken(tokenString: String): Authentication = {
-    val encryptedTokenData = Base58.decode(tokenString)
-    val encrypted = ByteBuffer.wrap(encryptedTokenData)
-    val decrypted = ByteBuffer.allocate(256)
-    decrypt(encrypted, passPhrase.toCharArray, salt, decrypted)
-    decrypted.limit(decrypted.position())
-    decrypted.rewind()
+    val encrypted = Base58.decode(tokenString)
+    val decrypted = decrypt(encrypted, passPhrase.toCharArray, salt)
     val decompressed = decompress(decrypted)
-    val header = read(decompressed, headerBytes.length)
+    val header = decompressed.slice(0, headerBytes.length)
     checkData(headerBytes, header, "Authentication token header not found")
-    val version = read(decompressed, versionBytes.length)
+    val versionStart = headerBytes.size
+    val versionEnd = versionStart + versionBytes.size
+    val version = decompressed.slice(versionStart, versionEnd)
     checkData(versionBytes, version, "Unsupported version " + new String(version, encodingCharset))
-    decodeToken(decompressed)
+    decodeToken(decompressed.slice(versionEnd, decompressed.size))
   }
 
   def checkData(expected: Array[Byte], actual: Array[Byte], message: String) {
@@ -52,22 +40,20 @@ trait CompressingTokenCreator extends AESSharedKeyEncrypter { self: TokenEncoder
     }
   }
 
-  def compress(data: ByteBuffer): Array[Byte] = {
-    val bytes = ByteBuffers.toByteArray(data)
+  def compress(data: Array[Byte]): Array[Byte] = {
     val deflater = new Deflater()
-    deflater.setInput(bytes)
+    deflater.setInput(data)
     deflater.finish()
     val deflatedData = new Array[Byte](256)
     val size = deflater.deflate(deflatedData)
     deflatedData.slice(0, size)
   }
 
-  def decompress(data: ByteBuffer): ByteBuffer = {
+  def decompress(data: Array[Byte]): Array[Byte] = {
     val inflater = new Inflater()
-    val compressed = ByteBuffers.toByteArray(data)
-    inflater.setInput(compressed)
+    inflater.setInput(data)
     val decompressed = new Array[Byte](256)
     val size = inflater.inflate(decompressed)
-    ByteBuffer.wrap(decompressed, 0, size)
+    decompressed.slice(0, size)
   }
 }

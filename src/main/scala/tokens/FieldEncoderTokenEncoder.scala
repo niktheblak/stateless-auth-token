@@ -1,18 +1,17 @@
 package tokens
 
-import java.nio.ByteBuffer
 import serialization.{InvalidDataException, FieldEncoder}
 import java.util.Date
 
 trait FieldEncoderTokenEncoder extends TokenEncoder {
-  def encodeToken(auth: Authentication, buffer: ByteBuffer) {
+  def encodeToken(auth: Authentication): Array[Byte] = {
     require(auth.userId.length <= Byte.MaxValue, "Too long userId")
     require(auth.role.length <= Byte.MaxValue, "Too long role")
     val items = Seq(auth.userId, auth.role, auth.expirationTime.getTime)
-    FieldEncoder.encode(items, buffer)
+    FieldEncoder.encode(items)
   }
 
-  def decodeToken(tokenData: ByteBuffer): Authentication = {
+  def decodeToken(tokenData: Array[Byte]): Authentication = {
     val fields: Seq[Any] = FieldEncoder.decode(tokenData)
     if (fields.length != 3) {
       throw new InvalidDataException("Malformed content")

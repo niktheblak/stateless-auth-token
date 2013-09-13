@@ -2,8 +2,6 @@ package tokens
 
 import base58.Base58
 import serialization.InvalidDataException
-import utils.ByteBuffers.{toByteArray, read}
-import java.nio.ByteBuffer
 
 trait TokenCreator extends AESSharedKeyEncrypter { self: TokenEncoder =>
   val header = "AUTH-TOKEN"
@@ -16,29 +14,21 @@ trait TokenCreator extends AESSharedKeyEncrypter { self: TokenEncoder =>
   def salt: Array[Byte]
     
   def createAuthToken(auth: Authentication): String = {
-    val tokenData = ByteBuffer.allocate(256)
-    tokenData.put(headerBytes)
-    tokenData.put(versionBytes)
-    encodeToken(auth, tokenData)
-    tokenData.limit(tokenData.position)
-    tokenData.rewind()
-    val encryptedToken = ByteBuffer.allocate(256)
-    encrypt(tokenData, passPhrase.toCharArray, salt, encryptedToken)
-    Base58.encode(toByteArray(encryptedToken))
+    val tokenData = headerBytes ++ versionBytes ++ encodeToken(auth)
+    val encrypted = encrypt(tokenData, passPhrase.toCharArray, salt)
+    Base58.encode(encrypted)
   }
   
   def decodeAuthToken(tokenString: String): Authentication = {
-    val encryptedTokenData = Base58.decode(tokenString)
-    val encrypted = ByteBuffer.wrap(encryptedTokenData)
-    val decrypted = ByteBuffer.allocate(256)
-    decrypt(encrypted, passPhrase.toCharArray, salt, decrypted)
-    decrypted.limit(decrypted.position())
-    decrypted.rewind()
-    val header = read(decrypted, headerBytes.length)
+    val encrypted = Base58.decode(tokenString)
+    val decrypted = decrypt(encrypted, passPhrase.toCharArray, salt)
+    val header = decrypted.slice(0, headerBytes.length)
     checkData(headerBytes, header, "Authentication token header not found")
-    val version = read(decrypted, versionBytes.length)
+    val versionStart = headerBytes.size
+    val versionEnd = versionStart + versionBytes.size
+    val version = decrypted.slice(versionStart, versionEnd)
     checkData(versionBytes, version, "Unsupported version " + new String(version, encodingCharset))
-    decodeToken(decrypted)
+    decodeToken(decrypted.slice(versionEnd, decrypted.size))
   }
 
   def checkData(expected: Array[Byte], actual: Array[Byte], message: String) {
