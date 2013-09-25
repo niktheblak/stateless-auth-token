@@ -3,7 +3,6 @@ package serialization
 import java.nio.ByteBuffer
 import utils.ByteBuffers
 import BinaryUtils._
-import java.util
 
 object DefaultSerializers {
   private val serializers: Map[Int, BinarySerializer[_]] = Map(
@@ -32,11 +31,10 @@ object DefaultSerializers {
       Array(idAndSize.toByte) ++ bytes
     }
 
-    def deSerialize(source: Array[Byte]): String = {
-      val (id, size) = unpack(source.head)
+    def deSerialize(source: Array[Byte], offset: Int): String = {
+      val (id, size) = unpack(source(offset))
       require(id == identifier, "Serial ID %d does not match expected %d".format(id, identifier))
-      val buf = source.slice(1, 1 + size)
-      new String(buf, "UTF-8")
+      new String(source, offset + 1, size, "UTF-8")
     }
   }
 
@@ -69,25 +67,21 @@ object DefaultSerializers {
       ByteBuffers.toByteArray(target)
     }
 
-    def deSerialize(data: Array[Byte]): Long = {
-      val source = ByteBuffer.wrap(data)
-      val idAndSize = source.get()
+    def deSerialize(data: Array[Byte], offset: Int): Long = {
+      val idAndSize = data(offset)
       val (id, size) = unpack(idAndSize)
+      val source = ByteBuffer.wrap(data, offset + 1, size)
       require(id == identifier, "Serial ID %d does not match expected %d".format(id, identifier))
       size match {
         case 1 ⇒
-          requireDataSize(data, 2)
           source.get().toLong
         case 2 ⇒
-          requireDataSize(data, 3)
           val shortBuf = source.asShortBuffer()
           shortBuf.get()
         case 4 ⇒
-          requireDataSize(data, 5)
           val intBuf = source.asIntBuffer()
           intBuf.get()
         case 8 ⇒
-          requireDataSize(data, 9)
           val longBuf = source.asLongBuffer()
           longBuf.get()
         case n ⇒ throw new InvalidDataException(s"Unsupported data size $n")
@@ -97,9 +91,5 @@ object DefaultSerializers {
 
   object LongSerializer {
     val identifier = 1
-    def requireDataSize(data: Array[Byte], size: Int) {
-      if (data.size != size)
-        throw new InvalidDataException(s"Invalid data: ${util.Arrays.toString(data)}")
-    }
   }
 }

@@ -11,7 +11,7 @@ class DefaultSerializersTest extends FunSpec with ShouldMatchers {
       val source = "testString"
       val serializer = new StringSerializer
       val encoded = serializer.serialize(source)
-      val decoded = serializer.deSerialize(encoded)
+      val decoded = serializer.deSerialize(encoded, 0)
       decoded should equal(source)
     }
   }
@@ -21,7 +21,7 @@ class DefaultSerializersTest extends FunSpec with ShouldMatchers {
       val serializer = new LongSerializer
       val encoded = serializer.serialize(8)
       encoded.size should equal(2)
-      val decoded = serializer.deSerialize(encoded)
+      val decoded = serializer.deSerialize(encoded, 0)
       decoded should equal(8)
     }
 
@@ -29,7 +29,7 @@ class DefaultSerializersTest extends FunSpec with ShouldMatchers {
       val serializer = new LongSerializer
       val encoded = serializer.serialize(800)
       encoded.size should equal(3)
-      val decoded = serializer.deSerialize(encoded)
+      val decoded = serializer.deSerialize(encoded, 0)
       decoded should equal(800)
     }
 
@@ -39,7 +39,7 @@ class DefaultSerializersTest extends FunSpec with ShouldMatchers {
       val encoded = serializer.serialize(80000)
       encoded.size should equal(5)
       buf.rewind()
-      val decoded = serializer.deSerialize(encoded)
+      val decoded = serializer.deSerialize(encoded, 0)
       decoded should equal(80000)
     }
 
@@ -47,7 +47,7 @@ class DefaultSerializersTest extends FunSpec with ShouldMatchers {
       val serializer = new LongSerializer
       val encoded = serializer.serialize(8000000000L)
       encoded.size should equal(9)
-      val decoded = serializer.deSerialize(encoded)
+      val decoded = serializer.deSerialize(encoded, 0)
       decoded should equal(8000000000L)
     }
   }
