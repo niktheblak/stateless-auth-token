@@ -6,6 +6,8 @@ import tokens.{AuthenticationException, Authentication}
 class TokenGeneratorActor extends Actor with HostNameTokenCreator {
   import TokenGeneratorActor._
 
+  val passPhrase = "^YS5Fe>8L@37E513U:69^6*UNY{?"
+
   def receive = {
     case CreateToken(auth) ⇒
       val token = createAuthToken(auth)
