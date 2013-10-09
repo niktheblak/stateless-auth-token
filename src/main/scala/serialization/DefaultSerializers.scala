@@ -2,6 +2,7 @@ package serialization
 
 import java.nio.ByteBuffer
 import utils.ByteBuffers
+import BinaryUtils._
 
 object DefaultSerializers {
   private val serializers: Map[Int, BinarySerializer[_]] = Map(
@@ -22,21 +23,18 @@ object DefaultSerializers {
   }
 
   class StringSerializer extends BinarySerializer[String] {
-    import BinaryUtils._
     import StringSerializer.identifier
 
-    def serialize(obj: String, target: ByteBuffer) {
+    def serialize(obj: String): Array[Byte] = {
       val bytes = obj.getBytes("UTF-8")
       val idAndSize = pack(identifier, bytes.length)
-      target.put(idAndSize.toByte)
-      target.put(bytes)
+      Array(idAndSize.toByte) ++ bytes
     }
 
-    def deSerialize(source: ByteBuffer): String = {
-      val (id, size) = unpack(source.get())
+    def deSerialize(source: Array[Byte], offset: Int): String = {
+      val (id, size) = unpack(source(offset))
       require(id == identifier, "Serial ID %d does not match expected %d".format(id, identifier))
-      val buf = ByteBuffers.read(source, size)
-      new String(buf, "UTF-8")
+      new String(source, offset + 1, size, "UTF-8")
     }
   }
 
@@ -45,10 +43,10 @@ object DefaultSerializers {
   }
 
   class LongSerializer extends BinarySerializer[Long] {
-    import BinaryUtils._
-    import LongSerializer.identifier
+    import LongSerializer._
 
-    def serialize(value: Long, target: ByteBuffer) {
+    def serialize(value: Long): Array[Byte] = {
+      val target = ByteBuffer.allocate(9)
       if (value < Byte.MaxValue) {
         val idAndSize = pack(identifier, 1).toByte
         target.put(idAndSize)
@@ -66,27 +64,27 @@ object DefaultSerializers {
         target.put(idAndSize)
         target.putLong(value)
       }
+      ByteBuffers.toByteArray(target)
     }
 
-    def deSerialize(source: ByteBuffer): Long = {
-      val idAndSize = source.get()
+    def deSerialize(data: Array[Byte], offset: Int): Long = {
+      val idAndSize = data(offset)
       val (id, size) = unpack(idAndSize)
+      val source = ByteBuffer.wrap(data, offset + 1, size)
       require(id == identifier, "Serial ID %d does not match expected %d".format(id, identifier))
       size match {
-        case 1 ⇒ source.get().toLong
+        case 1 ⇒
+          source.get().toLong
         case 2 ⇒
           val shortBuf = source.asShortBuffer()
-          source.position(source.position() + 2)
           shortBuf.get()
         case 4 ⇒
           val intBuf = source.asIntBuffer()
-          source.position(source.position() + 4)
           intBuf.get()
         case 8 ⇒
           val longBuf = source.asLongBuffer()
-          source.position(source.position() + 8)
           longBuf.get()
-        case n ⇒ throw new InvalidDataException("Unsupported data size " + n)
+        case n ⇒ throw new InvalidDataException(s"Unsupported data size $n")
       }
     }
   }
