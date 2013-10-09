@@ -2,9 +2,8 @@ package tokens
 
 import javax.crypto.{Cipher, SecretKeyFactory}
 import javax.crypto.spec.{IvParameterSpec, SecretKeySpec, PBEKeySpec}
-import java.nio.ByteBuffer
 
-trait AESSharedKeyEncrypter {
+trait AESSharedKeyEncrypter extends Encrypter {
   val keyFactory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1")
 
   def encrypt(data: Array[Byte], password: Array[Char], salt: Array[Byte]): Array[Byte] = {

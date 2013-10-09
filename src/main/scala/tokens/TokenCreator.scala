@@ -3,7 +3,7 @@ package tokens
 import base58.Base58
 import serialization.InvalidDataException
 
-trait TokenCreator extends AESSharedKeyEncrypter { self: TokenEncoder =>
+trait TokenCreator { self: TokenEncoder with Encrypter =>
   val header = "AUTH-TOKEN"
   val version = "1.0"
   val encodingCharset = "UTF-8"

@@ -1,9 +1,9 @@
 package service
 
-import tokens.{FieldEncoderTokenEncoder, TokenCreator}
+import tokens.{AESSharedKeyEncrypter, FieldEncoderTokenEncoder, TokenCreator}
 import java.net.{UnknownHostException, InetAddress}
 
-trait HostNameTokenCreator extends TokenCreator with FieldEncoderTokenEncoder {
+trait HostNameTokenCreator extends TokenCreator with FieldEncoderTokenEncoder with AESSharedKeyEncrypter {
   val salt = generateSaltFromHostName
 
   private def generateSaltFromHostName =
