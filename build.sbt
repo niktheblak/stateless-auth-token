@@ -6,6 +6,8 @@ scalaVersion := "2.10.2"
 
 resolvers += Resolver.sonatypeRepo("snapshots")
 
+resolvers += "spray repo" at "http://repo.spray.io"
+
 libraryDependencies += "org.scala-lang" %% "scala-pickling" % "0.8.0-SNAPSHOT"
 
 libraryDependencies += "com.typesafe.akka" %% "akka-actor" % "2.2.0-RC1"
@@ -17,3 +19,5 @@ libraryDependencies += "io.spray" % "spray-can" % "1.2-M8"
 libraryDependencies += "io.spray" % "spray-routing" % "1.2-M8"
 
 libraryDependencies += "org.scalatest" %% "scalatest" % "1.9.2" % "test"
+
+libraryDependencies += "io.spray" % "spray-testkit" % "1.2-M8" % "test"
