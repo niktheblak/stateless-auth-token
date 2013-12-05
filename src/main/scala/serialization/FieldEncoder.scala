@@ -1,19 +1,18 @@
 package serialization
 
+import BinaryUtils._
 import scala.collection.mutable.ListBuffer
 import java.io.ByteArrayOutputStream
 
 object FieldEncoder {
-  import BinaryUtils._
-
   def encode[T](items: Seq[T]): Array[Byte] = {
     val target = new ByteArrayOutputStream
-    items foreach { item =>
+    items foreach { item ⇒
       DefaultSerializers.serializerFor(item) match {
         case Some(serializer) ⇒
           val data = serializer.serialize(item)
           target.write(data)
-        case None ⇒ throw new IllegalArgumentException("No serializer found for class " + item.getClass)
+        case None ⇒ throw new IllegalArgumentException(s"No serializer found for class ${item.getClass}")
       }
     }
     target.toByteArray
@@ -36,7 +35,7 @@ object FieldEncoder {
       case Some(serializer) ⇒
         val value = serializer.deSerialize(source, offset)
         (value.asInstanceOf[T], size)
-      case None ⇒ throw new IllegalArgumentException("No serializer found for serial ID " + id)
+      case None ⇒ throw new IllegalArgumentException(s"No serializer found for serial ID $id")
     }
   }
 }

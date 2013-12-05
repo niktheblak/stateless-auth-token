@@ -11,11 +11,14 @@ object DefaultSerializers {
 
   def serializerFor[T](obj: T): Option[BinarySerializer[T]] = {
     require(obj != null)
-    if (obj.getClass == classOf[String])
-      Some((new StringSerializer).asInstanceOf[BinarySerializer[T]])
-    else if (obj.getClass == classOf[java.lang.Long])
-      Some((new LongSerializer).asInstanceOf[BinarySerializer[T]])
-    else None
+    obj match {
+      case _: String ⇒ Some(serializers(StringSerializer.identifier).asInstanceOf[BinarySerializer[T]])
+      case _: java.lang.Byte ⇒ Some(serializers(LongSerializer.identifier).asInstanceOf[BinarySerializer[T]])
+      case _: java.lang.Short ⇒ Some(serializers(LongSerializer.identifier).asInstanceOf[BinarySerializer[T]])
+      case _: java.lang.Integer ⇒ Some(serializers(LongSerializer.identifier).asInstanceOf[BinarySerializer[T]])
+      case _: java.lang.Long ⇒ Some(serializers(LongSerializer.identifier).asInstanceOf[BinarySerializer[T]])
+      case _ ⇒ None
+    }
   }
 
   def serializerForId(id: Int): Option[BinarySerializer[_]] = {
@@ -33,7 +36,7 @@ object DefaultSerializers {
 
     def deSerialize(source: Array[Byte], offset: Int): String = {
       val (id, size) = unpack(source(offset))
-      require(id == identifier, "Serial ID %d does not match expected %d".format(id, identifier))
+      require(id == identifier, s"Serial ID $id does not match expected $identifier")
       new String(source, offset + 1, size, "UTF-8")
     }
   }

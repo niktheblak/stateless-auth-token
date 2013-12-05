@@ -20,10 +20,7 @@ trait TokenGeneratorService extends HttpService {
       (userId, role) ⇒
         val auth = Authentication(userId, role, expireAfter(1.hours))
         val createTokenTask = ask(tokenGeneratorActor, CreateToken(auth)).mapTo[TokenCreated]
-        val result = createTokenTask map { response ⇒
-          response.token
-        }
-        complete(result)
+        complete(createTokenTask.map(_.token))
     }
   }
   
