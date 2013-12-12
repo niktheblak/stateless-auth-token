@@ -1,9 +1,9 @@
 package serialization
 
-import org.scalatest.matchers.ShouldMatchers
+import org.scalatest.Matchers
 import org.scalatest.FlatSpec
 
-class BinaryUtilsTest extends FlatSpec with ShouldMatchers {
+class BinaryUtilsTest extends FlatSpec with Matchers {
   import BinaryUtils._
 
   "BinaryUtils" should "pack two bytes correctly" in {

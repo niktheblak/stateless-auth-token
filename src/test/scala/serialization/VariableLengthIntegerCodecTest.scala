@@ -1,11 +1,11 @@
 package serialization
 
 import org.scalatest.FunSpec
-import org.scalatest.matchers.ShouldMatchers
+import org.scalatest.Matchers
 import BinaryUtils._
 import scala.util.Random
 
-class VariableLengthIntegerCodecTest extends FunSpec with ShouldMatchers {
+class VariableLengthIntegerCodecTest extends FunSpec with Matchers {
   import VariableLengthIntegerCodec._
 
   describe("VariableLengthIntegerCodec") {

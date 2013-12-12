@@ -1,9 +1,9 @@
 import java.util.Calendar
 import org.scalatest.FlatSpec
-import org.scalatest.matchers.ShouldMatchers
+import org.scalatest.Matchers
 import tokens.Authentication
 
-class DefaultTokenCreatorTest extends FlatSpec with ShouldMatchers {
+class DefaultTokenCreatorTest extends FlatSpec with Matchers {
   "DefaultTokenCreator" should "encode and decode token" in {
     val expTime = Calendar.getInstance()
     expTime.add(Calendar.HOUR_OF_DAY, 1)

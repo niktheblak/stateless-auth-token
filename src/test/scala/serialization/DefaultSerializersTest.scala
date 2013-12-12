@@ -1,11 +1,11 @@
 package serialization
 
 import org.scalatest.FunSpec
-import org.scalatest.matchers.ShouldMatchers
+import org.scalatest.Matchers
 import serialization.DefaultSerializers.{LongSerializer, StringSerializer}
 import java.nio.ByteBuffer
 
-class DefaultSerializersTest extends FunSpec with ShouldMatchers {
+class DefaultSerializersTest extends FunSpec with Matchers {
   describe("StringSerializer") {
     it("should serialize strings correctly") {
       val source = "testString"
