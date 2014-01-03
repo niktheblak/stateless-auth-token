@@ -1,16 +1,23 @@
+package tokens
+
 import java.util.Calendar
 import org.scalatest.FlatSpec
 import org.scalatest.Matchers
-import tokens.Authentication
+
+object TestDefaultTokenCreator extends DefaultTokenCreator {
+  def passPhrase = "testPassPhrase"
+}
 
 class DefaultTokenCreatorTest extends FlatSpec with Matchers {
-  "DefaultTokenCreator" should "encode and decode token" in {
+  import TestDefaultTokenCreator._
+
+  "tokens.DefaultTokenCreator" should "encode and decode token" in {
     val expTime = Calendar.getInstance()
     expTime.add(Calendar.HOUR_OF_DAY, 1)
     val auth = Authentication("testUser", "testRole", expTime.getTime)
-    val token = DefaultTokenCreator.createAuthToken(auth)
+    val token = createAuthToken(auth)
     println("Authentication token length: " + token.length)
-    val decoded = DefaultTokenCreator.decodeAuthToken(token)
+    val decoded = decodeAuthToken(token)
     decoded.userId should equal(auth.userId)
     decoded.role should equal(auth.role)
     decoded.expirationTime should equal(auth.expirationTime)
