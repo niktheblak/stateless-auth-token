@@ -13,5 +13,5 @@ object SprayBootstrap extends App with SimpleRoutingApp with TokenGeneratorServi
   val processors = Runtime.getRuntime.availableProcessors()
   val tokenGeneratorActor = system.actorOf(Props[TokenGeneratorActor].withRouter(SmallestMailboxRouter(processors)))
 
-  startServer(interface = "localhost", port = 8080)(generateTokenRoute)
+  startServer(interface = "localhost", port = 8080)(routes)
 }
