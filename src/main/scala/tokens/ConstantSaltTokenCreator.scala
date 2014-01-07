@@ -13,13 +13,15 @@ trait ConstantSaltTokenCreator extends PayloadEncoder { self: TokenEncoder with 
   def salt: Array[Byte]
     
   def createAuthToken(auth: Authentication): String = {
-    val payload = encodePayload(encodeToken(auth), passPhrase.toCharArray, salt)
-    Base58.encode(payload)
+    val payload = encodePayload(encodeToken(auth))
+    val encrypted = encrypt(payload, passPhrase.toCharArray, salt)
+    Base58.encode(encrypted)
   }
   
   def decodeAuthToken(tokenString: String): Authentication = {
     val encrypted = Base58.decode(tokenString)
-    val payload = decodePayload(encrypted, passPhrase.toCharArray, salt)
+    val decrypted = decrypt(encrypted, passPhrase.toCharArray, salt)
+    val payload = decodePayload(decrypted)
     decodeToken(payload)
   }
 }

@@ -2,25 +2,23 @@ package tokens
 
 import serialization.InvalidDataException
 
-trait PayloadEncoder { self: TokenEncoder with Encrypter ⇒
+trait PayloadEncoder { self: TokenEncoder ⇒
   val headerBytes: Array[Byte]
   val versionBytes: Array[Byte]
   val encodingCharset: String
   
-  def encodePayload(data: Array[Byte], passPhrase: Array[Char], salt: Array[Byte]): Array[Byte] = {
-    val tokenData = headerBytes ++ versionBytes ++ data
-    encrypt(tokenData, passPhrase, salt)
+  def encodePayload(data: Array[Byte]): Array[Byte] = {
+    headerBytes ++ versionBytes ++ data
   }
   
-  def decodePayload(payload: Array[Byte], passPhrase: Array[Char], salt: Array[Byte]): Array[Byte] = {
-    val decrypted = decrypt(payload, passPhrase, salt)
-    val header = decrypted.slice(0, headerBytes.length)
+  def decodePayload(payload: Array[Byte]): Array[Byte] = {
+    val header = payload.slice(0, headerBytes.length)
     checkData(headerBytes, header, "Authentication token header not found")
     val versionStart = headerBytes.size
     val versionEnd = versionStart + versionBytes.size
-    val version = decrypted.slice(versionStart, versionEnd)
+    val version = payload.slice(versionStart, versionEnd)
     checkData(versionBytes, version, "Unsupported version " + new String(version, encodingCharset))
-    decrypted.slice(versionEnd, decrypted.size)
+    payload.slice(versionEnd, payload.size)
   }
 
   def checkLength(expectedLength: Int, actualLength: Int, message: String) {

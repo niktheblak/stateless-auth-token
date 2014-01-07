@@ -18,16 +18,18 @@ trait RandomSaltTokenCreator extends PayloadEncoder { self: TokenEncoder with En
   def createAuthToken(auth: Authentication): String = {
     val salt = new Array[Byte](saltLength)
     random.nextBytes(salt)
-    val payload = encodePayload(encodeToken(auth), passPhrase.toCharArray, salt)
-    Base58.encode(salt ++ payload)
+    val payload = encodePayload(encodeToken(auth))
+    val encrypted = encrypt(payload, passPhrase.toCharArray, salt)
+    Base58.encode(salt ++ encrypted)
   }
 
   def decodeAuthToken(tokenString: String): Authentication = {
     val encrypted = Base58.decode(tokenString)
     checkLength(minimumTokenLength, encrypted.length, "Authentication token is too short")
     val salt = encrypted.slice(0, saltLength)
-    val payload = encrypted.slice(saltLength, encrypted.length)
-    val data = decodePayload(payload, passPhrase.toCharArray, salt)
-    decodeToken(data)
+    val encryptedData = encrypted.slice(saltLength, encrypted.length)
+    val data = decrypt(encryptedData, passPhrase.toCharArray, salt)
+    val tokenData = decodePayload(data)
+    decodeToken(tokenData)
   }
 }
