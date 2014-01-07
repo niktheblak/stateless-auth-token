@@ -15,7 +15,7 @@ trait CompressingTokenCreator extends AESSharedKeyEncrypter { self: TokenEncoder
   def salt: Array[Byte]
 
   def createAuthToken(auth: Authentication): String = {
-    val tokenData = headerBytes ++ versionBytes ++ encodeToken(auth)
+    val tokenData = Array.concat(headerBytes, versionBytes, encodeToken(auth))
     val encrypted = encrypt(tokenData, passPhrase.toCharArray, salt)
     val deflated = compress(encrypted)
     Base58.encode(deflated)

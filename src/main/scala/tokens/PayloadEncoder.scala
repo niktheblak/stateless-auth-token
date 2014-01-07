@@ -8,7 +8,7 @@ trait PayloadEncoder { self: TokenEncoder ⇒
   val encodingCharset: String
   
   def encodePayload(data: Array[Byte]): Array[Byte] = {
-    headerBytes ++ versionBytes ++ data
+    Array.concat(headerBytes, versionBytes, data)
   }
   
   def decodePayload(payload: Array[Byte]): Array[Byte] = {
