@@ -1,6 +1,6 @@
 package tokens
 
 trait DefaultTokenCreator
-  extends RandomSaltTokenCreator
+  extends JasyptTokenCreator
   with FieldEncoderTokenEncoder
   with AESSharedKeyEncrypter
