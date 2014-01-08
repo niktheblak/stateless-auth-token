@@ -9,16 +9,16 @@ trait CompressingTokenCreator extends JasyptTokenCreator with Base58StringEncode
   def passPhrase: String
   def salt: Array[Byte]
 
-  override def createAuthToken(auth: Authentication): String = {
-    val tokenData = createTokenInternal(auth)
+  override def createTokenString(auth: Authentication): String = {
+    val tokenData = createToken(auth)
     val deflated = compress(tokenData)
-    encode(deflated)
+    encodeString(deflated)
   }
 
-  override def decodeAuthToken(tokenString: String): Authentication = {
-    val decoded = decode(tokenString)
+  override def readTokenString(tokenString: String): Authentication = {
+    val decoded = decodeString(tokenString)
     val decompressed = decompress(decoded)
-    decodeTokenInternal(decompressed)
+    readToken(decompressed)
   }
 
   def compress(data: Array[Byte]): Array[Byte] = {

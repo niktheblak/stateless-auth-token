@@ -17,23 +17,23 @@ trait JasyptTokenCreator extends PayloadEncoder with Base58StringEncoder { self:
     encryptor
   }
 
-  def createTokenInternal(auth: Authentication): Array[Byte] = {
+  def createToken(auth: Authentication): Array[Byte] = {
     val encodedToken: Array[Byte] = encodeToken(auth)
     val payload = encodePayload(encodedToken)
     encryptor.encrypt(payload)
   }
 
-  def decodeTokenInternal(tokenData: Array[Byte]): Authentication = {
+  def readToken(tokenData: Array[Byte]): Authentication = {
     val decrypted = encryptor.decrypt(tokenData)
     val payload = decodePayload(decrypted)
     decodeToken(payload)
   }
 
-  def createAuthToken(auth: Authentication): String =
-    encode(createTokenInternal(auth))
+  def createTokenString(auth: Authentication): String =
+    encodeString(createToken(auth))
 
-  def decodeAuthToken(tokenString: String): Authentication = {
-    val decoded = decode(tokenString)
-    decodeTokenInternal(decoded)
+  def readTokenString(tokenString: String): Authentication = {
+    val decoded = decodeString(tokenString)
+    readToken(decoded)
   }
 }

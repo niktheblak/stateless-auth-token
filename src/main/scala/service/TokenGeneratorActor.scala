@@ -10,11 +10,11 @@ class TokenGeneratorActor extends Actor with DefaultTokenCreator {
 
   def receive = {
     case CreateToken(auth) ⇒
-      val token = createAuthToken(auth)
+      val token = createTokenString(auth)
       sender ! TokenCreated(token)
     case DecodeToken(token) ⇒
       try {
-        val auth = decodeAuthToken(token)
+        val auth = readTokenString(token)
         sender ! TokenDecoded(auth)
       } catch {
         case e: AuthenticationException ⇒
