@@ -12,7 +12,7 @@ trait JasyptTokenCreator extends PayloadEncoder { self: TokenEncoder ⇒
 
   def passPhrase: String
 
-  def encryptor: BinaryEncryptor = {
+  lazy val encryptor: BinaryEncryptor = {
     val encryptor = new BasicBinaryEncryptor
     encryptor.setPassword(passPhrase)
     encryptor
