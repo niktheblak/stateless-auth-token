@@ -1,9 +1,8 @@
 package tokens
 
-import base58.Base58
 import java.security.SecureRandom
 
-trait RandomSaltTokenCreator extends PayloadEncoder { self: TokenEncoder with Encrypter ⇒
+trait RandomSaltTokenCreator extends PayloadEncoder with Base58StringEncoder { self: TokenEncoder with Encrypter ⇒
   val header = "AUTH"
   val version = 2
   val encodingCharset = "UTF-8"
@@ -16,20 +15,25 @@ trait RandomSaltTokenCreator extends PayloadEncoder { self: TokenEncoder with En
   def passPhrase: String
 
   def createAuthToken(auth: Authentication): String = {
-    val salt = new Array[Byte](saltLength)
-    random.nextBytes(salt)
+    val salt = generateSalt
     val payload = encodePayload(encodeToken(auth))
     val encrypted = encrypt(payload, passPhrase.toCharArray, salt)
-    Base58.encode(salt ++ encrypted)
+    encodeString(salt ++ encrypted)
   }
 
   def decodeAuthToken(tokenString: String): Authentication = {
-    val encrypted = Base58.decode(tokenString)
+    val encrypted = decodeString(tokenString)
     checkLength(minimumTokenLength, encrypted.length, "Authentication token is too short")
     val salt = encrypted.slice(0, saltLength)
     val encryptedData = encrypted.slice(saltLength, encrypted.length)
     val data = decrypt(encryptedData, passPhrase.toCharArray, salt)
     val tokenData = decodePayload(data)
     decodeToken(tokenData)
+  }
+
+  def generateSalt: Array[Byte] = {
+    val salt = new Array[Byte](saltLength)
+    random.nextBytes(salt)
+    salt
   }
 }
