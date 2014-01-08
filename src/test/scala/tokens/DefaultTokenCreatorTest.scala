@@ -5,7 +5,7 @@ import org.scalatest.FlatSpec
 import org.scalatest.Matchers
 
 object TestDefaultTokenCreator extends DefaultTokenCreator {
-  def passPhrase = "testPassPhrase"
+  override def passPhrase = "testPassPhrase"
 }
 
 class DefaultTokenCreatorTest extends FlatSpec with Matchers {

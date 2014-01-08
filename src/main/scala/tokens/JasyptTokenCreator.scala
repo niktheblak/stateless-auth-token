@@ -11,7 +11,7 @@ trait JasyptTokenCreator extends PayloadEncoder with Base58StringEncoder { self:
 
   def passPhrase: String
 
-  lazy val encryptor: BinaryEncryptor = {
+  val encryptor: BinaryEncryptor = {
     val encryptor = new BasicBinaryEncryptor
     encryptor.setPassword(passPhrase)
     encryptor
