@@ -1,9 +1,8 @@
 package tokens
 
 import org.jasypt.util.binary.{BinaryEncryptor, BasicBinaryEncryptor}
-import base58.Base58
 
-trait JasyptTokenCreator extends PayloadEncoder { self: TokenEncoder ⇒
+trait JasyptTokenCreator extends PayloadEncoder with Base58StringEncoder { self: TokenEncoder ⇒
   val header = "AUTH"
   val version = 3
   val encodingCharset = "UTF-8"
@@ -18,16 +17,23 @@ trait JasyptTokenCreator extends PayloadEncoder { self: TokenEncoder ⇒
     encryptor
   }
 
-  def createAuthToken(auth: Authentication): String = {
-    val payload = encodePayload(encodeToken(auth))
-    val encrypted = encryptor.encrypt(payload)
-    Base58.encode(encrypted)
+  def createTokenInternal(auth: Authentication): Array[Byte] = {
+    val encodedToken: Array[Byte] = encodeToken(auth)
+    val payload = encodePayload(encodedToken)
+    encryptor.encrypt(payload)
   }
 
+  def decodeTokenInternal(tokenData: Array[Byte]): Authentication = {
+    val decrypted = encryptor.decrypt(tokenData)
+    val payload = decodePayload(decrypted)
+    decodeToken(payload)
+  }
+
+  def createAuthToken(auth: Authentication): String =
+    encode(createTokenInternal(auth))
+
   def decodeAuthToken(tokenString: String): Authentication = {
-    val decoded = Base58.decode(tokenString)
-    val decrypted = encryptor.decrypt(decoded)
-    val tokenData = decodePayload(decrypted)
-    decodeToken(tokenData)
+    val decoded = decode(tokenString)
+    decodeTokenInternal(decoded)
   }
 }
