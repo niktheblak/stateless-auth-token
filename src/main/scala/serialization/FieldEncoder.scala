@@ -5,7 +5,7 @@ import scala.collection.mutable.ListBuffer
 import java.io.ByteArrayOutputStream
 
 object FieldEncoder {
-  def encode[T](items: Seq[T]): Array[Byte] = {
+  def encode(items: Seq[Any]): Array[Byte] = {
     val target = new ByteArrayOutputStream
     items foreach { item ⇒
       DefaultSerializers.serializerFor(item) match {

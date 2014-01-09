@@ -3,8 +3,11 @@ package serialization
 import java.nio.ByteBuffer
 import utils.ByteBuffers
 import BinaryUtils._
+import java.nio.charset.Charset
 
 object DefaultSerializers {
+  private val encodingCharset = Charset.forName("UTF-8")
+
   private val serializers: Map[Int, BinarySerializer[_]] = Map(
     StringSerializer.identifier -> new StringSerializer,
     LongSerializer.identifier -> new LongSerializer)
@@ -29,7 +32,7 @@ object DefaultSerializers {
     import StringSerializer.identifier
 
     def serialize(obj: String): Array[Byte] = {
-      val bytes = obj.getBytes("UTF-8")
+      val bytes = obj.getBytes(encodingCharset)
       val idAndSize = pack(identifier, bytes.length)
       Array(idAndSize.toByte) ++ bytes
     }
@@ -37,7 +40,7 @@ object DefaultSerializers {
     def deSerialize(source: Array[Byte], offset: Int): String = {
       val (id, size) = unpack(source(offset))
       require(id == identifier, s"Serial ID $id does not match expected $identifier")
-      new String(source, offset + 1, size, "UTF-8")
+      new String(source, offset + 1, size, encodingCharset)
     }
   }
 
@@ -74,7 +77,7 @@ object DefaultSerializers {
       val idAndSize = data(offset)
       val (id, size) = unpack(idAndSize)
       val source = ByteBuffer.wrap(data, offset + 1, size)
-      require(id == identifier, "Serial ID %d does not match expected %d".format(id, identifier))
+      require(id == identifier, s"Serial ID $id does not match expected $identifier")
       size match {
         case 1 ⇒
           source.get().toLong
