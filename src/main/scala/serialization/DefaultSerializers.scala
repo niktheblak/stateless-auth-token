@@ -33,6 +33,8 @@ object DefaultSerializers {
 
     def serialize(obj: String): Array[Byte] = {
       val bytes = obj.getBytes(encodingCharset)
+      require(bytes.length <= BinaryUtils.maxSizeLength,
+        s"Source string is ${bytes.length} bytes with $encodingCharset encoding, maximum is ${BinaryUtils.maxSizeLength} bytes")
       val idAndSize = pack(identifier, bytes.length)
       Array(idAndSize.toByte) ++ bytes
     }

@@ -1,9 +1,12 @@
 package serialization
 
 object BinaryUtils {
+  val maxIdLength = 3
+  val maxSizeLength = 63
+
   def pack(id: Int, size: Int): Int = {
-    require(id <= 3, "id must be smaller than 4")
-    require(size <= 63, "size must be smaller than 64")
+    require(id <= maxIdLength, s"id must be less than $maxIdLength")
+    require(size <= maxSizeLength, s"size must be less than $maxSizeLength")
     val packed = ((id & 0x3) << 6) | (size & 0x3F)
     packed
   }
