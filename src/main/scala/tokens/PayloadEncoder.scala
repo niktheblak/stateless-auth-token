@@ -5,8 +5,7 @@ import serialization.InvalidDataException
 trait PayloadEncoder { self: TokenEncoder ⇒
   val headerBytes: Array[Byte]
   val versionBytes: Array[Byte]
-  val encodingCharset: String
-  
+
   def encodePayload(data: Array[Byte]): Array[Byte] = {
     Array.concat(headerBytes, versionBytes, data)
   }
@@ -17,7 +16,7 @@ trait PayloadEncoder { self: TokenEncoder ⇒
     val versionStart = headerBytes.size
     val versionEnd = versionStart + versionBytes.size
     val version = payload.slice(versionStart, versionEnd)
-    checkData(versionBytes, version, "Unsupported version " + new String(version, encodingCharset))
+    checkData(versionBytes, version, "Unsupported version " + new String(version, "US-ASCII"))
     payload.slice(versionEnd, payload.size)
   }
 

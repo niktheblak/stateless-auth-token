@@ -1,11 +1,12 @@
 package tokens
 
 import org.jasypt.util.binary.{BinaryEncryptor, BasicBinaryEncryptor}
+import java.nio.charset.Charset
 
 trait JasyptTokenCreator extends PayloadEncoder with Base58StringEncoder { self: TokenEncoder ⇒
   val header = "AUTH"
   val version = 3
-  val encodingCharset = "UTF-8"
+  val encodingCharset = Charset.forName("UTF-8")
   val headerBytes = header.getBytes(encodingCharset)
   val versionBytes = Array[Byte](version.toByte)
 
