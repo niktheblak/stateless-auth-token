@@ -33,13 +33,13 @@ object VariableLengthIntegerCodec {
 
   def decode(buf: ByteBuffer): Long = {
     val iterator = ByteBuffers.toIterator(buf)
-    val extendedBytes = iterator.takeWhile(b ⇒ (b & 0x80) != 0)
+    val extendedBytes = iterator.takeWhile(b ⇒ (b & 0x80) != 0).take(maxBlocks)
     val result = extendedBytes.foldLeft(0L)((r, b) ⇒ {
       val payload = b & 0x7F
       (r << 7) | payload
     })
     val finalByte = iterator.current()
-    require((finalByte & 0x80) == 0)
+    require((finalByte & 0x80) == 0, "Malformed data, encoded number is probably too large")
     (result << 7) | finalByte
   }
 }

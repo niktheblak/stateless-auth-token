@@ -4,6 +4,7 @@ import org.scalatest.FunSpec
 import org.scalatest.Matchers
 import BinaryUtils._
 import scala.util.Random
+import java.nio.ByteBuffer
 
 class VariableLengthIntegerCodecTest extends FunSpec with Matchers {
   import VariableLengthIntegerCodec._
@@ -40,6 +41,12 @@ class VariableLengthIntegerCodecTest extends FunSpec with Matchers {
       toInt(arr(0)) should equal (107)
       arr should have length 1
       decode(arr) should equal (x)
+    }
+
+    it ("should throw when decoding too large data from ByteBuffer") {
+      val data = Array(-4.toByte, -4.toByte, -4.toByte, -4.toByte, -4.toByte, -4.toByte, -4.toByte, -4.toByte, -4.toByte)
+      val buf = ByteBuffer.wrap(data)
+      an [IllegalArgumentException] should be thrownBy { decode(buf) }
     }
 
     it ("should round-trip encode random numbers correctly") {
