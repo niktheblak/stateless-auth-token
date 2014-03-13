@@ -1,6 +1,7 @@
 package serialization
 
 import java.nio.ByteBuffer
+import utils.ByteBuffers
 
 object VariableLengthIntegerCodec {
   val maxBlocks = 8
@@ -21,42 +22,24 @@ object VariableLengthIntegerCodec {
   }
 
   def decode(data: Array[Byte]): Long = {
-    require(data.length <= maxBlocks, "Encoded number is too long")
-    var result = 0L
-    for (i <- 0 until data.length) {
-      val payload = data(i) & 0x7F
-      result = (result << 7) | payload
-    }
-    result
+    require(data.length <= maxBlocks, "Encoded number is too large")
+    decode(ByteBuffer.wrap(data))
   }
 
   def decode(data: Array[Byte], offset: Int): Long = {
-    var i = offset
-    var result = 0L
-    while (i < data.length && (data(i) & 0x80) != 0) {
-      require(i <= maxBlocks, "Encoded number is too long")
-      val payload = data(i) & 0x7F
-      result = (result << 7) | payload
-      i = i + 1
-    }
-    require((data(i) & 0x80) == 0)
-    result = (result << 7) | data(i)
-    result
+    require(data.length <= maxBlocks, "Encoded number is too large")
+    decode(ByteBuffer.wrap(data, offset, data.length))
   }
 
-  def decode(data: ByteBuffer): Long = {
-    var result = 0L
-    var i = 0
-    var b = data.get()
-    while ((b & 0x80) != 0) {
-      require(i <= maxBlocks, "Encoded number is too long")
+  def decode(buf: ByteBuffer): Long = {
+    val iterator = ByteBuffers.toIterator(buf)
+    val extendedBytes = iterator.takeWhile(b ⇒ (b & 0x80) != 0)
+    val result = extendedBytes.foldLeft(0L)((r, b) ⇒ {
       val payload = b & 0x7F
-      result = (result << 7) | payload
-      i = i + 1
-      b = data.get()
-    }
-    require((b & 0x80) == 0)
-    result = (result << 7) | b
-    result
+      (r << 7) | payload
+    })
+    val finalByte = iterator.current()
+    require((finalByte & 0x80) == 0)
+    (result << 7) | finalByte
   }
 }
