@@ -4,6 +4,10 @@ version := "1.0.0-SNAPSHOT"
 
 scalaVersion := "2.11.4"
 
+incOptions := incOptions.value.withNameHashing(true)
+
+scalacOptions ++= Seq("-deprecation", "-unchecked", "-feature", "-Xlint")
+
 libraryDependencies += "com.typesafe.akka" %% "akka-actor" % "2.3.6"
 
 libraryDependencies += "com.typesafe.akka" %% "akka-testkit" % "2.3.6" % "test"

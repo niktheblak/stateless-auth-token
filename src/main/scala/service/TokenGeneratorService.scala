@@ -19,21 +19,25 @@ trait TokenGeneratorService extends HttpService {
   val tokenGeneratorActor: ActorRef
 
   val generateTokenRoute = path("token") {
-    (get & parameters('userId.as[String], 'role.as[String])) { (userId, role) ⇒
-      complete {
-        val auth = Authentication(userId, role, expireAfter(1 hours))
-        val createTokenTask = ask(tokenGeneratorActor, CreateToken(auth)).mapTo[TokenCreated]
-        createTokenTask.map(_.token)
+    get {
+      parameters('userId.as[String], 'role.as[String]) { (userId, role) ⇒
+        complete {
+          val auth = Authentication(userId, role, expireAfter(1 hours))
+          val createTokenTask = ask(tokenGeneratorActor, CreateToken(auth)).mapTo[TokenCreated]
+          createTokenTask.map(_.token)
+        }
       }
     }
   }
 
   val authRoute = path("auth") {
-    ((get | post) & anyParams('token.as[String])) { token ⇒
-      complete {
-        authenticate(token) map {
-          case Success(auth) => HttpResponse(entity = "Welcome, " + auth.userId)
-          case Failure(e) => HttpResponse(status = StatusCodes.Unauthorized, entity = e.getMessage)
+    (get | post) {
+      parameter('token.as[String]) { token ⇒
+        complete {
+          authenticate(token) map {
+            case Success(auth) => HttpResponse(entity = "Welcome, " + auth.userId)
+            case Failure(e) => HttpResponse(status = StatusCodes.Unauthorized, entity = e.getMessage)
+          }
         }
       }
     }

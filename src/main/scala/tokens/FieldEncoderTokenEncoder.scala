@@ -5,7 +5,7 @@ import java.util.Date
 
 trait FieldEncoderTokenEncoder extends TokenEncoder {
   def encodeToken(auth: Authentication): Array[Byte] = {
-    val items = Seq(auth.userId, auth.role, auth.expirationTime.getTime)
+    val items: Seq[Any] = Seq(auth.userId, auth.role, auth.expirationTime.getTime)
     FieldEncoder.encode(items)
   }
 
