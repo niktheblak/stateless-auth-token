@@ -1,3 +1,5 @@
+import scalariform.formatter.preferences._
+
 name := "stateless-auth-token"
 
 version := "1.0.0-SNAPSHOT"
@@ -21,3 +23,9 @@ libraryDependencies += "org.jasypt" % "jasypt" % "1.9.1"
 libraryDependencies += "org.scalatest" %% "scalatest" % "2.2.1" % "test"
 
 libraryDependencies += "io.spray" %% "spray-testkit" % "1.3.2" % "test"
+
+scalariformSettings
+
+ScalariformKeys.preferences := ScalariformKeys.preferences.value
+  .setPreference(RewriteArrowSymbols, true)
+  .setPreference(PreserveSpaceBeforeArguments, true)

@@ -1,6 +1,6 @@
 package tokens
 
-import org.jasypt.util.binary.{BinaryEncryptor, BasicBinaryEncryptor}
+import org.jasypt.util.binary.{ BinaryEncryptor, BasicBinaryEncryptor }
 import java.nio.charset.Charset
 
 trait JasyptTokenCreator extends PayloadEncoder with Base58StringEncoder { self: TokenEncoder ⇒

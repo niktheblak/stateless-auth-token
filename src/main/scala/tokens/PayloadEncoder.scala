@@ -9,7 +9,7 @@ trait PayloadEncoder { self: TokenEncoder ⇒
   def encodePayload(data: Array[Byte]): Array[Byte] = {
     Array.concat(headerBytes, versionBytes, data)
   }
-  
+
   def decodePayload(payload: Array[Byte]): Array[Byte] = {
     val header = payload.slice(0, headerBytes.length)
     checkData(headerBytes, header, "Authentication token header not found")

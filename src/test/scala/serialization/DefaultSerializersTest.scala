@@ -2,7 +2,7 @@ package serialization
 
 import org.scalatest.FunSpec
 import org.scalatest.Matchers
-import serialization.DefaultSerializers.{LongSerializer, StringSerializer}
+import serialization.DefaultSerializers.{ LongSerializer, StringSerializer }
 import java.nio.ByteBuffer
 
 class DefaultSerializersTest extends FunSpec with Matchers {

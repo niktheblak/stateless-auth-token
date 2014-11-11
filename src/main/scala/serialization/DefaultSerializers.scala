@@ -59,7 +59,7 @@ object DefaultSerializers {
         val idAndSize = pack(identifier, 1).toByte
         target.put(idAndSize)
         target.put(value.toByte)
-      } else if (value < Short.MaxValue ) {
+      } else if (value < Short.MaxValue) {
         val idAndSize = pack(identifier, 2).toByte
         target.put(idAndSize)
         target.putShort(value.toShort)

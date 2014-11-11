@@ -1,6 +1,6 @@
 package tokens
 
-import java.util.zip.{Inflater, Deflater}
+import java.util.zip.{ Inflater, Deflater }
 
 trait CompressingTokenCreator extends JasyptTokenCreator with Base58StringEncoder { self: TokenEncoder ⇒
   override val version = 5

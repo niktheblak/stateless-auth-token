@@ -2,7 +2,7 @@ package service
 
 import spray.routing.SimpleRoutingApp
 import akka.util.Timeout
-import akka.actor.{Props, ActorSystem}
+import akka.actor.{ Props, ActorSystem }
 import akka.routing.SmallestMailboxPool
 import scala.concurrent.duration._
 

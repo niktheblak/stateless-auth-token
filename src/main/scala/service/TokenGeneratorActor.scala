@@ -1,7 +1,7 @@
 package service
 
-import akka.actor.{Status, Actor}
-import tokens.{DefaultTokenCreator, AuthenticationException, Authentication}
+import akka.actor.{ Status, Actor }
+import tokens.{ DefaultTokenCreator, AuthenticationException, Authentication }
 
 class TokenGeneratorActor extends Actor with DefaultTokenCreator {
   import TokenGeneratorActor._

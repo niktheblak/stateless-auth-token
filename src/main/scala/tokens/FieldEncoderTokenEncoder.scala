@@ -1,6 +1,6 @@
 package tokens
 
-import serialization.{InvalidDataException, FieldEncoder}
+import serialization.{ InvalidDataException, FieldEncoder }
 import java.util.Date
 
 trait FieldEncoderTokenEncoder extends TokenEncoder {
