@@ -17,7 +17,7 @@ Clone project from repository:
 
 ### Running Unit Tests
 
-Make sure you have a working installations JDK and SBT. Open terminal and execute:
+Make sure you have working installations of JDK and SBT available on your workstation. Open terminal and execute:
 
     $ sbt test
 
@@ -39,6 +39,8 @@ Select `service.SprayBootstrap` from the options provided by SBT.
 
 After this you have the following REST API available on `http://localhost:8080`:
 
+#### Create Token
+
 Route: `http://localhost:8080/token`
 
 Generates an access token with the given user ID and user role encoded in it.
@@ -49,6 +51,8 @@ userId    | User ID to be encoded in the token
 role      | User role to be encoded in the token
 
 Response: Encoded access token
+
+#### Authenticate Against A Token
 
 Route: `http://localhost:8080/auth`
 
