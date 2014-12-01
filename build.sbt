@@ -18,7 +18,7 @@ libraryDependencies += "io.spray" %% "spray-can" % "1.3.2"
 
 libraryDependencies += "io.spray" %% "spray-routing" % "1.3.2"
 
-libraryDependencies += "org.jasypt" % "jasypt" % "1.9.1"
+libraryDependencies += "org.jasypt" % "jasypt" % "1.9.2"
 
 libraryDependencies += "org.scalatest" %% "scalatest" % "2.2.1" % "test"
 
