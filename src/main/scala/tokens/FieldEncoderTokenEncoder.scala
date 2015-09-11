@@ -4,12 +4,12 @@ import serialization.{ InvalidDataException, FieldEncoder }
 import java.util.Date
 
 trait FieldEncoderTokenEncoder extends TokenEncoder {
-  def encodeToken(auth: Authentication): Array[Byte] = {
+  override def encodeToken(auth: Authentication): Array[Byte] = {
     val items: Seq[Any] = Seq(auth.userId, auth.role, auth.expirationTime.getTime)
     FieldEncoder.encode(items)
   }
 
-  def decodeToken(tokenData: Array[Byte]): Authentication = {
+  override def decodeToken(tokenData: Array[Byte]): Authentication = {
     val fields: Seq[Any] = FieldEncoder.decode(tokenData)
     if (fields.length != 3) {
       throw new InvalidDataException("Malformed content")

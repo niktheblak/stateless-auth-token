@@ -5,26 +5,27 @@ import java.nio.ByteBuffer
 import java.util.Date
 
 trait VariableLengthIntegerTokenEncoder extends TokenEncoder {
-  def encodeToken(auth: Authentication, buffer: ByteBuffer) {
+  override def encodeToken(auth: Authentication): Array[Byte] = {
     val userIdBytes = auth.userId.getBytes("UTF-8")
     val roleBytes = auth.role.getBytes("UTF-8")
-    buffer.put(encode(userIdBytes.size))
-    buffer.put(userIdBytes)
-    buffer.put(encode(roleBytes.size))
-    buffer.put(roleBytes)
-    buffer.put(encode(auth.expirationTime.getTime))
+    encode(userIdBytes.size) ++
+        userIdBytes ++
+        encode(roleBytes.size) ++
+        roleBytes ++
+        encode(auth.expirationTime.getTime)
   }
 
-  def decodeToken(tokenData: ByteBuffer): Authentication = {
-    val userIdLength = decode(tokenData).toInt
+  override def decodeToken(tokenData: Array[Byte]): Authentication = {
+    val buffer = ByteBuffer.wrap(tokenData)
+    val userIdLength = decode(buffer).toInt
     val userIdBytes = new Array[Byte](userIdLength)
-    tokenData.get(userIdBytes)
+    buffer.get(userIdBytes)
     val userId = new String(userIdBytes, "UTF-8")
-    val roleLength = decode(tokenData).toInt
+    val roleLength = decode(buffer).toInt
     val roleBytes = new Array[Byte](roleLength)
-    tokenData.get(roleBytes)
+    buffer.get(roleBytes)
     val role = new String(roleBytes, "UTF-8")
-    val expirationTime = decode(tokenData)
+    val expirationTime = decode(buffer)
     Authentication(userId, role, new Date(expirationTime))
   }
 }
