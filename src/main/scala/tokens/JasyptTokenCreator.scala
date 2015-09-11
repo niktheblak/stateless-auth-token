@@ -1,5 +1,6 @@
 package tokens
 
+import org.jasypt.exceptions.EncryptionOperationNotPossibleException
 import org.jasypt.util.binary.{ BinaryEncryptor, BasicBinaryEncryptor }
 import java.nio.charset.Charset
 
@@ -25,9 +26,13 @@ trait JasyptTokenCreator extends PayloadEncoder with Base58StringEncoder { self:
   }
 
   def readToken(tokenData: Array[Byte]): Authentication = {
-    val decrypted = encryptor.decrypt(tokenData)
-    val payload = decodePayload(decrypted)
-    decodeToken(payload)
+    try {
+      val decrypted = encryptor.decrypt(tokenData)
+      val payload = decodePayload(decrypted)
+      decodeToken(payload)
+    } catch {
+      case e: EncryptionOperationNotPossibleException ⇒ throw new AuthenticationException("Error while decoding token data", e)
+    }
   }
 
   def createTokenString(auth: Authentication): String =
