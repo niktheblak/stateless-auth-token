@@ -7,7 +7,7 @@ object VariableLengthIntegerCodec {
   val maxBlocks = 8
 
   def encode(x: Long): Array[Byte] = {
-    require(x >= 0 && x <= 0x80000000000000L)
+    require(x >= 0 && x <= Long.MaxValue, s"Argument must be between 0 and ${Long.MaxValue}, inclusive")
     val buf = new Array[Byte](8)
     for (i ← 0 to 7) {
       val block = (x >>> i * 7) & 0x7F
@@ -22,12 +22,16 @@ object VariableLengthIntegerCodec {
   }
 
   def decode(data: Array[Byte]): Long = {
-    require(data.length <= maxBlocks, "Encoded number is too large")
+    if (data.length > maxBlocks) {
+      throw new InvalidDataException("Encoded number is too large")
+    }
     decode(ByteBuffer.wrap(data))
   }
 
   def decode(data: Array[Byte], offset: Int): Long = {
-    require(data.length <= maxBlocks, "Encoded number is too large")
+    if (data.length > maxBlocks) {
+      throw new InvalidDataException("Encoded number is too large")
+    }
     decode(ByteBuffer.wrap(data, offset, data.length))
   }
 
@@ -39,7 +43,9 @@ object VariableLengthIntegerCodec {
       (r << 7) | payload
     })
     val finalByte = iterator.current()
-    require((finalByte & 0x80) == 0, "Malformed data, encoded number is probably too large")
+    if ((finalByte & 0x80) != 0) {
+      throw new InvalidDataException("Malformed data, encoded number is probably too large")
+    }
     (result << 7) | finalByte
   }
 }

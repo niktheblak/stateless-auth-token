@@ -16,7 +16,6 @@ class DefaultTokenCreatorTest extends FlatSpec with Matchers {
     expTime.add(Calendar.HOUR_OF_DAY, 1)
     val auth = Authentication("testUser", "testRole", expTime.getTime)
     val token = createTokenString(auth)
-    println("Authentication token length: " + token.length)
     val decoded = readTokenString(token)
     decoded.userId should equal(auth.userId)
     decoded.role should equal(auth.role)

@@ -6,7 +6,7 @@ object CLI extends App with DefaultTokenCreator {
   val expTime = Calendar.getInstance()
   expTime.add(Calendar.HOUR_OF_DAY, 1)
   val token = createTokenString(Authentication("testUser", "testRole", expTime.getTime))
-  println(s"Token length: ${token.size} bytes")
+  println(s"Token length: ${token.length} bytes")
   println(s"Token: $token")
   val decoded = readTokenString(token)
   println(decoded)

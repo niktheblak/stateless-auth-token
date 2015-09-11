@@ -21,7 +21,7 @@ object FieldEncoder {
   def decode(data: Array[Byte]): Seq[Any] = {
     val buf = new ListBuffer[Any]()
     var position = 0
-    while (position < data.size) {
+    while (position < data.length) {
       val (item, size) = decodeItem[Any](data, position)
       position += size + 1
       buf += item

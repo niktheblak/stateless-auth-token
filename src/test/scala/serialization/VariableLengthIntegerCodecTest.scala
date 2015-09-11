@@ -46,7 +46,7 @@ class VariableLengthIntegerCodecTest extends FunSpec with Matchers {
     it ("should throw when decoding too large data from ByteBuffer") {
       val data = Array(-4.toByte, -4.toByte, -4.toByte, -4.toByte, -4.toByte, -4.toByte, -4.toByte, -4.toByte, -4.toByte)
       val buf = ByteBuffer.wrap(data)
-      an[IllegalArgumentException] should be thrownBy { decode(buf) }
+      an[InvalidDataException] should be thrownBy { decode(buf) }
     }
 
     it ("should round-trip encode random numbers correctly") {

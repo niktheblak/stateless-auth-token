@@ -9,10 +9,10 @@ trait VariableLengthIntegerTokenEncoder extends TokenEncoder {
     val userIdBytes = auth.userId.getBytes("UTF-8")
     val roleBytes = auth.role.getBytes("UTF-8")
     encode(userIdBytes.size) ++
-        userIdBytes ++
-        encode(roleBytes.size) ++
-        roleBytes ++
-        encode(auth.expirationTime.getTime)
+      userIdBytes ++
+      encode(roleBytes.size) ++
+      roleBytes ++
+      encode(auth.expirationTime.getTime)
   }
 
   override def decodeToken(tokenData: Array[Byte]): Authentication = {

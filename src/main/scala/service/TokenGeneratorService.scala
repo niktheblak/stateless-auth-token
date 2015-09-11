@@ -11,7 +11,6 @@ import java.util.Date
 import scala.concurrent.duration._
 import scala.concurrent.{ Future, ExecutionContext }
 import scala.util.{ Try, Success, Failure }
-import scala.language.postfixOps
 
 trait TokenGeneratorService extends HttpService {
   implicit val context: ExecutionContext

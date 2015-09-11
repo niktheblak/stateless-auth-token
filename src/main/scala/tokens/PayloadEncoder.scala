@@ -1,6 +1,7 @@
 package tokens
 
 import serialization.InvalidDataException
+import utils.Printables
 
 trait PayloadEncoder { self: TokenEncoder ⇒
   val headerBytes: Array[Byte]
@@ -12,12 +13,12 @@ trait PayloadEncoder { self: TokenEncoder ⇒
 
   def decodePayload(payload: Array[Byte]): Array[Byte] = {
     val header = payload.slice(0, headerBytes.length)
-    checkData(headerBytes, header, "Authentication token header not found")
-    val versionStart = headerBytes.size
-    val versionEnd = versionStart + versionBytes.size
+    checkData(headerBytes, header, s"Invalid header: ${Printables.getPrintables(header)}")
+    val versionStart = headerBytes.length
+    val versionEnd = versionStart + versionBytes.length
     val version = payload.slice(versionStart, versionEnd)
-    checkData(versionBytes, version, "Unsupported version " + new String(version, "US-ASCII"))
-    payload.slice(versionEnd, payload.size)
+    checkData(versionBytes, version, s"Unsupported version: ${Printables.getPrintables(version)}")
+    payload.slice(versionEnd, payload.length)
   }
 
   def checkLength(expectedLength: Int, actualLength: Int, message: String) {
