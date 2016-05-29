@@ -20,7 +20,7 @@ class DefaultSerializersTest extends FunSpec with Matchers {
     it("should serialize byte-sized numbers efficiently") {
       val serializer = new LongSerializer
       val encoded = serializer.serialize(8)
-      encoded.size should equal(2)
+      encoded should have length 2
       val decoded = serializer.deSerialize(encoded, 0)
       decoded should equal(8)
     }
@@ -28,7 +28,7 @@ class DefaultSerializersTest extends FunSpec with Matchers {
     it("should serialize word-sized numbers efficiently") {
       val serializer = new LongSerializer
       val encoded = serializer.serialize(800)
-      encoded.size should equal(3)
+      encoded should have length 3
       val decoded = serializer.deSerialize(encoded, 0)
       decoded should equal(800)
     }
@@ -37,7 +37,7 @@ class DefaultSerializersTest extends FunSpec with Matchers {
       val serializer = new LongSerializer
       val buf = ByteBuffer.allocate(5)
       val encoded = serializer.serialize(80000)
-      encoded.size should equal(5)
+      encoded should have length 5
       buf.rewind()
       val decoded = serializer.deSerialize(encoded, 0)
       decoded should equal(80000)
@@ -46,7 +46,7 @@ class DefaultSerializersTest extends FunSpec with Matchers {
     it("should serialize long-sized numbers efficiently") {
       val serializer = new LongSerializer
       val encoded = serializer.serialize(8000000000L)
-      encoded.size should equal(9)
+      encoded should have length 9
       val decoded = serializer.deSerialize(encoded, 0)
       decoded should equal(8000000000L)
     }
