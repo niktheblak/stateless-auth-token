@@ -1,16 +1,18 @@
 package serialization
 
 import java.nio.ByteBuffer
-import utils.ByteBuffers
-import BinaryUtils._
 import java.nio.charset.Charset
+
+import serialization.BinaryUtils._
+import utils.ByteBuffers
 
 object DefaultSerializers {
   private val encodingCharset = Charset.forName("UTF-8")
 
   private val serializers: Map[Int, BinarySerializer[_]] = Map(
-    StringSerializer.identifier -> new StringSerializer,
-    LongSerializer.identifier -> new LongSerializer)
+    StringSerializer.identifier → new StringSerializer,
+    LongSerializer.identifier → new LongSerializer
+  )
 
   def serializerFor[T](obj: T): Option[BinarySerializer[T]] = {
     require(obj != null)
@@ -33,8 +35,10 @@ object DefaultSerializers {
 
     def serialize(obj: String): Array[Byte] = {
       val bytes = obj.getBytes(encodingCharset)
-      require(bytes.length <= BinaryUtils.maxSizeLength,
-        s"Source string is ${bytes.length} bytes with $encodingCharset encoding, maximum is ${BinaryUtils.maxSizeLength} bytes")
+      require(
+        bytes.length <= BinaryUtils.maxSizeLength,
+        s"Source string is ${bytes.length} bytes with $encodingCharset encoding, maximum is ${BinaryUtils.maxSizeLength} bytes"
+      )
       val idAndSize = pack(identifier, bytes.length)
       Array(idAndSize.toByte) ++ bytes
     }

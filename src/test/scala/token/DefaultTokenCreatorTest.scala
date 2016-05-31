@@ -7,6 +7,9 @@ import org.scalatest.{FlatSpec, Matchers}
 
 object TestDefaultTokenCreator extends DefaultTokenCreator {
   override val password: Array[Char] = "testPassPhrase".toCharArray
+
+  override def generateSalt(lengthBytes: Int): Array[Byte] =
+    new Array[Byte](lengthBytes)
 }
 
 class DefaultTokenCreatorTest extends FlatSpec with Matchers {
