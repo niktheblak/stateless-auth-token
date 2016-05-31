@@ -1,4 +1,6 @@
-package tokens
+package token
+
+import encoding.FieldEncoderTokenEncoder
 
 trait DefaultTokenCreator
   extends JasyptTokenCreator

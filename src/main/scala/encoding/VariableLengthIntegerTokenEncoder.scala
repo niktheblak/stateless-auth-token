@@ -1,8 +1,10 @@
-package tokens
+package encoding
 
-import serialization.VariableLengthIntegerCodec._
 import java.nio.ByteBuffer
 import java.util.Date
+
+import auth.Authentication
+import serialization.VariableLengthIntegerCodec._
 
 trait VariableLengthIntegerTokenEncoder extends TokenEncoder {
   override def encodeToken(auth: Authentication): Array[Byte] = {

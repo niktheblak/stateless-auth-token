@@ -1,4 +1,4 @@
-package tokens
+package auth
 
 import java.util.Date
 

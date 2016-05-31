@@ -1,7 +1,9 @@
-package tokens
+package encoding
 
-import serialization.{ InvalidDataException, FieldEncoder }
 import java.util.Date
+
+import auth.Authentication
+import serialization.{FieldEncoder, InvalidDataException}
 
 trait FieldEncoderTokenEncoder extends TokenEncoder {
   override def encodeToken(auth: Authentication): Array[Byte] = {

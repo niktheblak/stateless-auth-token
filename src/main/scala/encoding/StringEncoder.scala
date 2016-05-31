@@ -1,4 +1,4 @@
-package tokens
+package encoding
 
 trait StringEncoder {
   def encodeString(data: Array[Byte]): String

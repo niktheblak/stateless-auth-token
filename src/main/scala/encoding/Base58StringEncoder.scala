@@ -1,4 +1,4 @@
-package tokens
+package encoding
 
 import base58.Base58
 

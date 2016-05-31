@@ -1,6 +1,6 @@
 package serialization
 
-import tokens.AuthenticationException
+import auth.AuthenticationException
 
 class InvalidDataException(message: String, cause: Throwable) extends AuthenticationException(message, cause) {
   def this(message: String) = this(message, null)

@@ -1,8 +1,9 @@
-package tokens
+package token
 
 import java.util.Calendar
-import org.scalatest.FlatSpec
-import org.scalatest.Matchers
+
+import auth.Authentication
+import org.scalatest.{FlatSpec, Matchers}
 
 object TestDefaultTokenCreator extends DefaultTokenCreator {
   override def passPhrase = "testPassPhrase"

@@ -1,6 +1,6 @@
-package tokens
+package crypto
 
-trait Encrypter {
+trait Encryptor {
   def encrypt(data: Array[Byte], password: Array[Char], salt: Array[Byte]): Array[Byte]
   def decrypt(encrypted: Array[Byte], password: Array[Char], salt: Array[Byte]): Array[Byte]
 }

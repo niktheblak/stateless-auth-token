@@ -1,16 +1,18 @@
 package service
 
-import tokens.{ Authentication, AuthenticationException }
-import service.TokenGeneratorActor._
-import spray.http.{ HttpResponse, StatusCodes }
-import spray.routing.HttpService
+import java.util.Date
+
 import akka.actor.ActorRef
 import akka.pattern.ask
 import akka.util.Timeout
-import java.util.Date
+import auth.{Authentication, AuthenticationException}
+import service.TokenGeneratorActor._
+import spray.http.{HttpResponse, StatusCodes}
+import spray.routing.HttpService
+
 import scala.concurrent.duration._
-import scala.concurrent.{ Future, ExecutionContext }
-import scala.util.{ Try, Success, Failure }
+import scala.concurrent.{ExecutionContext, Future}
+import scala.util.{Failure, Success, Try}
 
 trait TokenGeneratorService extends HttpService {
   implicit val context: ExecutionContext

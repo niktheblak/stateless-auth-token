@@ -1,7 +1,10 @@
-package tokens
+package token
 
-import org.jasypt.util.binary.{ BinaryEncryptor, BasicBinaryEncryptor }
 import java.nio.charset.Charset
+
+import auth.{Authentication, AuthenticationException}
+import encoding.{Base58StringEncoder, PayloadEncoder, TokenEncoder}
+import org.jasypt.util.binary.{BasicBinaryEncryptor, BinaryEncryptor}
 
 trait JasyptTokenCreator extends PayloadEncoder with Base58StringEncoder { self: TokenEncoder ⇒
   val header = "AUTH"

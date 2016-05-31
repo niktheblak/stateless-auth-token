@@ -1,8 +1,12 @@
-package tokens
+package token
 
 import java.security.SecureRandom
 
-trait RandomSaltTokenCreator extends PayloadEncoder with Base58StringEncoder { self: TokenEncoder with Encrypter ⇒
+import auth.Authentication
+import crypto.Encryptor
+import encoding.{Base58StringEncoder, PayloadEncoder, TokenEncoder}
+
+trait RandomSaltTokenCreator extends PayloadEncoder with Base58StringEncoder { self: TokenEncoder with Encryptor ⇒
   val header = "AUTH"
   val version = 2
   val encodingCharset = "UTF-8"
