@@ -1,3 +1,8 @@
+import com.typesafe.sbt.SbtScalariform
+import com.typesafe.sbt.SbtScalariform.ScalariformKeys
+
+import scalariform.formatter.preferences._
+
 name := "stateless-auth-token"
 
 version := "1.0.0-SNAPSHOT"
@@ -21,3 +26,9 @@ libraryDependencies ++= Seq(
   "com.typesafe.akka" %% "akka-testkit" % akkaVersion % "test",
   "io.spray" %% "spray-testkit" % sprayVersion % "test"
 )
+
+SbtScalariform.scalariformSettings
+
+ScalariformKeys.preferences := ScalariformKeys.preferences.value
+  .setPreference(RewriteArrowSymbols, true)
+  .setPreference(PreserveSpaceBeforeArguments, true)
