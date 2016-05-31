@@ -6,7 +6,7 @@ import auth.Authentication
 import org.scalatest.{FlatSpec, Matchers}
 
 object TestDefaultTokenCreator extends DefaultTokenCreator {
-  override def passPhrase = "testPassPhrase"
+  override val password: Array[Char] = "testPassPhrase".toCharArray
 }
 
 class DefaultTokenCreatorTest extends FlatSpec with Matchers {

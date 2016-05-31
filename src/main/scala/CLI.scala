@@ -4,7 +4,7 @@ import auth.Authentication
 import token._
 
 object CLI extends App with DefaultTokenCreator {
-  override def passPhrase = "^YS5Fe>8L@37E513U:69^6*UNY{?"
+  override val password: Array[Char] = "^YS5Fe>8L@37E513U:69^6*UNY{?".toCharArray
   val expTime = Calendar.getInstance()
   expTime.add(Calendar.HOUR_OF_DAY, 1)
   val token = createTokenString(Authentication("testUser", "testRole", expTime.getTime))
