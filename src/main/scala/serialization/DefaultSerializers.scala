@@ -33,6 +33,13 @@ object DefaultSerializers {
     serializers.get(id)
   }
 
+  def getIdAndSize(data: Array[Byte], offset: Int, expectedIdentifier: Int): (Int, Int) = {
+    val idAndSize = data(offset)
+    val (id, size) = unpack(idAndSize)
+    require(id == expectedIdentifier, s"Serial ID $id does not match expected $expectedIdentifier")
+    (id, size)
+  }
+
   class StringSerializer extends BinarySerializer[String] {
     import StringSerializer.identifier
 
@@ -46,10 +53,9 @@ object DefaultSerializers {
       Array(idAndSize.toByte) ++ bytes
     }
 
-    def deSerialize(source: Array[Byte], offset: Int): String = {
-      val (id, size) = unpack(source(offset))
-      require(id == identifier, s"Serial ID $id does not match expected $identifier")
-      new String(source, offset + 1, size, encodingCharset)
+    def deSerialize(data: Array[Byte], offset: Int): String = {
+      val (_, size) = getIdAndSize(data, offset, identifier)
+      new String(data, offset + 1, size, encodingCharset)
     }
   }
 
@@ -83,10 +89,8 @@ object DefaultSerializers {
     }
 
     def deSerialize(data: Array[Byte], offset: Int): Long = {
-      val idAndSize = data(offset)
-      val (id, size) = unpack(idAndSize)
+      val (_, size) = getIdAndSize(data, offset, identifier)
       val source = ByteBuffer.wrap(data, offset + 1, size)
-      require(id == identifier, s"Serial ID $id does not match expected $identifier")
       size match {
         case 1 ⇒
           source.get().toLong
@@ -123,9 +127,7 @@ object DefaultSerializers {
     }
 
     override def deSerialize(data: Array[Byte], offset: Int): Roles.Role = {
-      val idAndSize = data(offset)
-      val (id, size) = unpack(idAndSize)
-      require(id == identifier, s"Serial ID $id does not match expected $identifier")
+      val (_, size) = getIdAndSize(data, offset, identifier)
       require(size == 1, s"Invalid size $size")
       data(offset + 1) match {
         case 0 ⇒ Roles.Admin
