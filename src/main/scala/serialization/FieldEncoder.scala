@@ -1,8 +1,10 @@
 package serialization
 
-import BinaryUtils._
-import scala.collection.mutable.ListBuffer
 import java.io.ByteArrayOutputStream
+
+import serialization.BinaryUtils._
+
+import scala.collection.mutable.ListBuffer
 
 object FieldEncoder {
   def encode(items: Seq[Any]): Array[Byte] = {
@@ -26,11 +28,12 @@ object FieldEncoder {
       position += size + 1
       buf += item
     }
-    buf.toSeq
+    buf
   }
 
   private def decodeItem[T](source: Array[Byte], offset: Int): (T, Int) = {
-    val (id, size) = unpack(source(offset))
+    val idAndSize = java.lang.Byte.toUnsignedInt(source(offset))
+    val (id, size) = unpack(idAndSize)
     DefaultSerializers.serializerForId(id) match {
       case Some(serializer) ⇒
         val value = serializer.deSerialize(source, offset)

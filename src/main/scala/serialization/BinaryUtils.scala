@@ -12,8 +12,9 @@ object BinaryUtils {
   }
 
   def unpack(x: Int): (Int, Int) = {
-    val id = x >> 6
-    val size = x & 0x3F
+    val idAndSize = x & 0xFF
+    val id = idAndSize >> 6
+    val size = idAndSize & 0x3F
     (id, size)
   }
 

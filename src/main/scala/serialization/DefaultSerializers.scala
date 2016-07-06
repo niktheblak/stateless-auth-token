@@ -3,6 +3,7 @@ package serialization
 import java.nio.ByteBuffer
 import java.nio.charset.Charset
 
+import auth.Roles
 import serialization.BinaryUtils._
 import utils.ByteBuffers
 
@@ -11,7 +12,8 @@ object DefaultSerializers {
 
   private val serializers: Map[Int, BinarySerializer[_]] = Map(
     StringSerializer.identifier → new StringSerializer,
-    LongSerializer.identifier → new LongSerializer
+    LongSerializer.identifier → new LongSerializer,
+    RoleSerializer.identifier → new RoleSerializer
   )
 
   def serializerFor[T](obj: T): Option[BinarySerializer[T]] = {
@@ -22,6 +24,7 @@ object DefaultSerializers {
       case _: java.lang.Short ⇒ Some(serializers(LongSerializer.identifier).asInstanceOf[BinarySerializer[T]])
       case _: java.lang.Integer ⇒ Some(serializers(LongSerializer.identifier).asInstanceOf[BinarySerializer[T]])
       case _: java.lang.Long ⇒ Some(serializers(LongSerializer.identifier).asInstanceOf[BinarySerializer[T]])
+      case _: Roles.Role ⇒ Some(serializers(RoleSerializer.identifier).asInstanceOf[BinarySerializer[T]])
       case _ ⇒ None
     }
   }
@@ -103,5 +106,35 @@ object DefaultSerializers {
 
   object LongSerializer {
     val identifier = 1
+  }
+
+  class RoleSerializer extends BinarySerializer[Roles.Role] {
+    import RoleSerializer._
+
+    override def serialize(role: Roles.Role): Array[Byte] = {
+      val bytes = new Array[Byte](2)
+      val idAndSize = pack(identifier, 1).toByte
+      bytes.update(0, idAndSize)
+      role match {
+        case Roles.Admin ⇒ bytes.update(1, 0.toByte)
+        case Roles.User ⇒ bytes.update(1, 1.toByte)
+      }
+      bytes
+    }
+
+    override def deSerialize(data: Array[Byte], offset: Int): Roles.Role = {
+      val idAndSize = data(offset)
+      val (id, size) = unpack(idAndSize)
+      require(id == identifier, s"Serial ID $id does not match expected $identifier")
+      require(size == 1, s"Invalid size $size")
+      data(offset + 1) match {
+        case 0 ⇒ Roles.Admin
+        case 1 ⇒ Roles.User
+      }
+    }
+  }
+
+  object RoleSerializer {
+    val identifier = 2
   }
 }

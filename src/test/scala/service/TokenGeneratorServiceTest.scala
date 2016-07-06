@@ -1,11 +1,11 @@
 package service
 
-import spray.testkit.ScalatestRouteTest
-import org.scalatest.FlatSpec
-import org.scalatest.Matchers
-import akka.util.Timeout
 import java.util.concurrent.TimeUnit
+
 import akka.actor.{ ActorSystem, Props }
+import akka.util.Timeout
+import org.scalatest.{ FlatSpec, Matchers }
+import spray.testkit.ScalatestRouteTest
 
 class TokenGeneratorServiceTest extends FlatSpec with TokenGeneratorService with Matchers with ScalatestRouteTest {
   implicit def actorRefFactory: ActorSystem = system
@@ -14,7 +14,7 @@ class TokenGeneratorServiceTest extends FlatSpec with TokenGeneratorService with
   val tokenGeneratorActor = actorRefFactory.actorOf(Props[TokenGeneratorActor])
 
   "TokenGeneratorService" should "generate a non-empty token" in {
-    Get("/token?userId=x&role=y") ~> generateTokenRoute ~> check {
+    Get("/token?userId=x&role=user") ~> generateTokenRoute ~> check {
       responseAs[String] should not be 'empty
     }
   }

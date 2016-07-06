@@ -2,8 +2,8 @@ package encoding
 
 import java.util.Date
 
-import auth.Authentication
-import serialization.{FieldEncoder, InvalidDataException}
+import auth.{ Authentication, Roles }
+import serialization.{ FieldEncoder, InvalidDataException }
 
 trait FieldEncoderTokenEncoder extends TokenEncoder {
   override def encodeToken(auth: Authentication): Array[Byte] = {
@@ -17,7 +17,7 @@ trait FieldEncoderTokenEncoder extends TokenEncoder {
       throw new InvalidDataException("Malformed content")
     }
     val userId = fields(0).asInstanceOf[String]
-    val role = fields(1).asInstanceOf[String]
+    val role = fields(1).asInstanceOf[Roles.Role]
     val expirationTime = fields(2).asInstanceOf[Long]
     Authentication(userId, role, new Date(expirationTime))
   }

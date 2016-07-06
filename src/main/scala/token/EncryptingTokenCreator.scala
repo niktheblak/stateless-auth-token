@@ -1,8 +1,8 @@
 package token
 
-import auth.{Authentication, AuthenticationException}
+import auth.{ Authentication, AuthenticationException }
 import crypto.Encryptor
-import encoding.{Base58StringEncoder, PayloadEncoder, TokenEncoder}
+import encoding.{ Base58StringEncoder, PayloadEncoder, TokenEncoder }
 
 trait EncryptingTokenCreator extends PayloadEncoder with Base58StringEncoder { self: TokenEncoder with Encryptor ⇒
   def createToken(auth: Authentication): Array[Byte] = {

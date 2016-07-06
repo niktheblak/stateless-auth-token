@@ -1,7 +1,7 @@
 package crypto
 
-import javax.crypto.spec.{IvParameterSpec, PBEKeySpec, SecretKeySpec}
-import javax.crypto.{Cipher, SecretKeyFactory}
+import javax.crypto.spec.{ IvParameterSpec, PBEKeySpec, SecretKeySpec }
+import javax.crypto.{ Cipher, SecretKeyFactory }
 
 trait AESSharedKeyEncryptor extends Encryptor {
   val keyFactory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1")

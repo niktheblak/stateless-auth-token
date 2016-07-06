@@ -5,14 +5,14 @@ import java.util.Date
 import akka.actor.ActorRef
 import akka.pattern.ask
 import akka.util.Timeout
-import auth.{Authentication, AuthenticationException}
+import auth.{ Authentication, AuthenticationException, Roles }
 import service.TokenGeneratorActor._
-import spray.http.{HttpResponse, StatusCodes}
+import spray.http.{ HttpResponse, StatusCodes }
 import spray.routing.HttpService
 
 import scala.concurrent.duration._
-import scala.concurrent.{ExecutionContext, Future}
-import scala.util.{Failure, Success, Try}
+import scala.concurrent.{ ExecutionContext, Future }
+import scala.util.{ Failure, Success, Try }
 
 trait TokenGeneratorService extends HttpService {
   implicit val context: ExecutionContext
@@ -23,9 +23,13 @@ trait TokenGeneratorService extends HttpService {
     get {
       parameters('userId.as[String], 'role.as[String]) { (userId, role) ⇒
         complete {
-          val auth = Authentication(userId, role, expireAfter(1.hours))
-          val createTokenTask = ask(tokenGeneratorActor, CreateToken(auth)).mapTo[TokenCreated]
-          createTokenTask.map(_.token)
+          parseRole(role) match {
+            case Some(r) ⇒
+              val auth = Authentication(userId, r, expireAfter(1.hours))
+              val createTokenTask = ask(tokenGeneratorActor, CreateToken(auth)).mapTo[TokenCreated]
+              createTokenTask.map(_.token)
+            case None ⇒ HttpResponse(status = StatusCodes.BadRequest)
+          }
         }
       }
     }
@@ -58,4 +62,12 @@ trait TokenGeneratorService extends HttpService {
 
   def expireAfter(duration: FiniteDuration): Date =
     new Date(System.currentTimeMillis + duration.toMillis)
+
+  def parseRole(role: String): Option[Roles.Role] = {
+    role.toLowerCase match {
+      case "admin" ⇒ Some(Roles.Admin)
+      case "user" ⇒ Some(Roles.User)
+      case _ ⇒ None
+    }
+  }
 }

@@ -2,7 +2,7 @@ package token
 
 import crypto.Encryptor
 import encoding.TokenEncoder
-import org.jasypt.encryption.pbe.{PBEByteCleanablePasswordEncryptor, StandardPBEByteEncryptor}
+import org.jasypt.encryption.pbe.{ PBEByteCleanablePasswordEncryptor, StandardPBEByteEncryptor }
 import org.jasypt.salt.SaltGenerator
 
 trait JasyptTokenCreator extends EncryptingTokenCreator with Encryptor { self: TokenEncoder ⇒
