@@ -11,7 +11,7 @@ scalaVersion := "2.11.8"
 
 val akkaVersion = "2.3.15"
 
-val sprayVersion = "1.3.3"
+val sprayVersion = "1.3.4"
 
 incOptions := incOptions.value.withNameHashing(true)
 
