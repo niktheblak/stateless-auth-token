@@ -1,17 +1,19 @@
 package crypto
 
-import javax.crypto.spec.{ IvParameterSpec, PBEKeySpec, SecretKeySpec }
-import javax.crypto.{ Cipher, SecretKeyFactory }
+import javax.crypto.spec.{IvParameterSpec, PBEKeySpec, SecretKeySpec}
+import javax.crypto.{Cipher, SecretKeyFactory}
 
-trait AESSharedKeyEncryptor extends Encryptor {
-  val keyFactory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1")
+trait AESSharedKeyEncryptor {
+  val keyFactory: SecretKeyFactory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256")
   val cipherType = "AES/CBC/PKCS5Padding"
   val keySpecAlgorithm = "AES"
+  val iterationCount = 65536
+  val keyLength = 256
 
   def encrypt(data: Array[Byte], password: Array[Char], salt: Array[Byte]): Array[Byte] = {
     require(salt.length > 0)
-    val spec = new PBEKeySpec(password, salt, 65536, 128)
-    val tmp = keyFactory.generateSecret(spec)
+    val keySpec = new PBEKeySpec(password, salt, iterationCount, keyLength)
+    val tmp = keyFactory.generateSecret(keySpec)
     val secret = new SecretKeySpec(tmp.getEncoded, keySpecAlgorithm)
     val cipher = Cipher.getInstance(cipherType)
     cipher.init(Cipher.ENCRYPT_MODE, secret)
@@ -22,13 +24,14 @@ trait AESSharedKeyEncryptor extends Encryptor {
   }
 
   def decrypt(encrypted: Array[Byte], password: Array[Char], salt: Array[Byte]): Array[Byte] = {
+    require(encrypted.length > 16)
     val iv = encrypted.slice(0, 16)
-    val spec = new PBEKeySpec(password, salt, 65536, 128)
+    val spec = new PBEKeySpec(password, salt, iterationCount, keyLength)
     val tmp = keyFactory.generateSecret(spec)
     val secret = new SecretKeySpec(tmp.getEncoded, keySpecAlgorithm)
     val cipher = Cipher.getInstance(cipherType)
     cipher.init(Cipher.DECRYPT_MODE, secret, new IvParameterSpec(iv))
-    val payload = encrypted.slice(16, encrypted.length)
+    val payload = encrypted.drop(16)
     cipher.doFinal(payload)
   }
 }
