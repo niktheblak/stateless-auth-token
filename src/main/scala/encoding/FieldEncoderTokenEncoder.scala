@@ -16,7 +16,7 @@ trait FieldEncoderTokenEncoder extends TokenEncoder {
     if (fields.length != 3) {
       throw new InvalidDataException("Malformed content")
     }
-    val userId = fields(0).asInstanceOf[String]
+    val userId = fields.head.asInstanceOf[String]
     val role = fields(1).asInstanceOf[Roles.Role]
     val expirationTime = fields(2).asInstanceOf[Long]
     Authentication(userId, role, new Date(expirationTime))
