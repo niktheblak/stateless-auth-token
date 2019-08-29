@@ -7,7 +7,7 @@ import token.DefaultTokenCreator
 class TokenGeneratorActor extends Actor with DefaultTokenCreator {
   import TokenGeneratorActor._
 
-  override val password: Array[Char] = "^YS5Fe>8L@37E513U:69^6*UNY{?".toCharArray
+  override val password = "^YS5Fe>8L@37E513U:69^6*UNY{?"
 
   def receive = {
     case CreateToken(auth) =>

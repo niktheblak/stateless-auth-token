@@ -6,7 +6,7 @@ import auth.{ Authentication, Roles }
 import org.scalatest.{ FlatSpec, Matchers }
 
 object TestDefaultTokenCreator extends DefaultTokenCreator {
-  override val password: Array[Char] = "testPassPhrase".toCharArray
+  override val password = "testPassPhrase"
 
   override def generateSalt(lengthBytes: Int): Array[Byte] =
     new Array[Byte](lengthBytes)

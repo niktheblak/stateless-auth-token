@@ -1,5 +1,3 @@
-import scalariform.formatter.preferences._
-
 name := "stateless-auth-token"
 
 version := "1.0.0-SNAPSHOT"
@@ -14,7 +12,7 @@ scalacOptions ++= Seq(
 
 libraryDependencies ++= Seq(
   "com.typesafe.akka" %% "akka-actor" % akkaVersion,
-  "org.jasypt" % "jasypt" % "1.9.3",
+  "com.google.crypto.tink" % "tink" % "1.3.0-rc1",
   "org.scalatest" %% "scalatest" % "3.0.8" % "test",
   "com.typesafe.akka" %% "akka-testkit" % akkaVersion % "test"
 )

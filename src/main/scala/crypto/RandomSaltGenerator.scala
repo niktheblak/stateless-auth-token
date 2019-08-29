@@ -2,14 +2,10 @@ package crypto
 
 import java.security.SecureRandom
 
-import org.jasypt.salt.SaltGenerator
-
-trait RandomSaltGenerator extends SaltGenerator {
+trait RandomSaltGenerator {
   val random = new SecureRandom
 
-  override def includePlainSaltInEncryptionResults(): Boolean = true
-
-  override def generateSalt(lengthBytes: Int): Array[Byte] = {
+  def generateSalt(lengthBytes: Int): Array[Byte] = {
     val salt = new Array[Byte](lengthBytes)
     random.nextBytes(salt)
     salt
