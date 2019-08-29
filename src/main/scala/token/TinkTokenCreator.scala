@@ -1,23 +1,15 @@
 package token
 
-import java.security.MessageDigest
-
-import com.google.crypto.tink.Aead
-import com.google.crypto.tink.aead.AeadConfig
-import com.google.crypto.tink.subtle.AesGcmJce
+import com.google.crypto.tink.aead.{ AeadConfig, AeadKeyTemplates }
+import com.google.crypto.tink.{ Aead, KeysetHandle }
 import crypto.Encryptor
 import encoding.TokenEncoder
 
 trait TinkTokenCreator extends EncryptingTokenCreator with Encryptor { self: TokenEncoder =>
-  val password: String
-
   lazy val encryptor: Aead = {
     AeadConfig.register()
-    val messageDigest = MessageDigest.getInstance("SHA-256")
-    messageDigest.update(password.getBytes("UTF-8"))
-    val key256Bit = messageDigest.digest()
-    val key128Bit = key256Bit.take(16)
-    new AesGcmJce(key128Bit)
+    val keysetHandle = KeysetHandle.generateNew(AeadKeyTemplates.AES128_GCM)
+    keysetHandle.getPrimitive(classOf[Aead])
   }
 
   override def encrypt(data: Array[Byte]): Array[Byte] = {
