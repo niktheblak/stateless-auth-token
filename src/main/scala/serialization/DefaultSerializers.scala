@@ -11,20 +11,20 @@ object DefaultSerializers {
   private val encodingCharset = Charset.forName("UTF-8")
 
   private val serializers: Map[Int, BinarySerializer[_]] = Map(
-    StringSerializer.identifier → new StringSerializer,
-    LongSerializer.identifier → new LongSerializer,
-    RoleSerializer.identifier → new RoleSerializer)
+    StringSerializer.identifier -> new StringSerializer,
+    LongSerializer.identifier -> new LongSerializer,
+    RoleSerializer.identifier -> new RoleSerializer)
 
   def serializerFor[T](obj: T): Option[BinarySerializer[T]] = {
     require(obj != null)
     obj match {
-      case _: String ⇒ Some(serializers(StringSerializer.identifier).asInstanceOf[BinarySerializer[T]])
-      case _: java.lang.Byte ⇒ Some(serializers(LongSerializer.identifier).asInstanceOf[BinarySerializer[T]])
-      case _: java.lang.Short ⇒ Some(serializers(LongSerializer.identifier).asInstanceOf[BinarySerializer[T]])
-      case _: java.lang.Integer ⇒ Some(serializers(LongSerializer.identifier).asInstanceOf[BinarySerializer[T]])
-      case _: java.lang.Long ⇒ Some(serializers(LongSerializer.identifier).asInstanceOf[BinarySerializer[T]])
-      case _: Roles.Role ⇒ Some(serializers(RoleSerializer.identifier).asInstanceOf[BinarySerializer[T]])
-      case _ ⇒ None
+      case _: String => Some(serializers(StringSerializer.identifier).asInstanceOf[BinarySerializer[T]])
+      case _: java.lang.Byte => Some(serializers(LongSerializer.identifier).asInstanceOf[BinarySerializer[T]])
+      case _: java.lang.Short => Some(serializers(LongSerializer.identifier).asInstanceOf[BinarySerializer[T]])
+      case _: java.lang.Integer => Some(serializers(LongSerializer.identifier).asInstanceOf[BinarySerializer[T]])
+      case _: java.lang.Long => Some(serializers(LongSerializer.identifier).asInstanceOf[BinarySerializer[T]])
+      case _: Roles.Role => Some(serializers(RoleSerializer.identifier).asInstanceOf[BinarySerializer[T]])
+      case _ => None
     }
   }
 
@@ -90,18 +90,18 @@ object DefaultSerializers {
       val (_, size) = getIdAndSize(data, offset, identifier)
       val source = ByteBuffer.wrap(data, offset + 1, size)
       size match {
-        case 1 ⇒
+        case 1 =>
           source.get().toLong
-        case 2 ⇒
+        case 2 =>
           val shortBuf = source.asShortBuffer()
           shortBuf.get()
-        case 4 ⇒
+        case 4 =>
           val intBuf = source.asIntBuffer()
           intBuf.get()
-        case 8 ⇒
+        case 8 =>
           val longBuf = source.asLongBuffer()
           longBuf.get()
-        case n ⇒ throw new InvalidDataException(s"Unsupported data size $n")
+        case n => throw new InvalidDataException(s"Unsupported data size $n")
       }
     }
   }
@@ -118,8 +118,8 @@ object DefaultSerializers {
       val idAndSize = pack(identifier, 1).toByte
       bytes.update(0, idAndSize)
       role match {
-        case Roles.Admin ⇒ bytes.update(1, 0.toByte)
-        case Roles.User ⇒ bytes.update(1, 1.toByte)
+        case Roles.Admin => bytes.update(1, 0.toByte)
+        case Roles.User => bytes.update(1, 1.toByte)
       }
       bytes
     }
@@ -128,8 +128,8 @@ object DefaultSerializers {
       val (_, size) = getIdAndSize(data, offset, identifier)
       require(size == 1, s"Invalid size $size")
       data(offset + 1) match {
-        case 0 ⇒ Roles.Admin
-        case 1 ⇒ Roles.User
+        case 0 => Roles.Admin
+        case 1 => Roles.User
       }
     }
   }

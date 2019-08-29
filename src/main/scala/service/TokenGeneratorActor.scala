@@ -10,15 +10,15 @@ class TokenGeneratorActor extends Actor with DefaultTokenCreator {
   override val password: Array[Char] = "^YS5Fe>8L@37E513U:69^6*UNY{?".toCharArray
 
   def receive = {
-    case CreateToken(auth) ⇒
+    case CreateToken(auth) =>
       val token = createTokenString(auth)
       sender ! TokenCreated(token)
-    case DecodeToken(token) ⇒
+    case DecodeToken(token) =>
       try {
         val auth = readTokenString(token)
         sender ! TokenDecoded(auth)
       } catch {
-        case e: AuthenticationException ⇒
+        case e: AuthenticationException =>
           sender ! Status.Failure(e)
       }
   }

@@ -4,7 +4,7 @@ object Printables {
   val replacement = '.'
 
   def getPrintables(data: Array[Byte]): String = {
-    val content = data.foldLeft(new StringBuilder) { (builder, b) ⇒
+    val content = data.foldLeft(new StringBuilder) { (builder, b) =>
       if (isPrintable(b)) {
         builder.append(b.toChar)
       } else {

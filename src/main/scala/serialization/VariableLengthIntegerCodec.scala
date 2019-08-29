@@ -9,7 +9,7 @@ object VariableLengthIntegerCodec {
   def encode(x: Long): Array[Byte] = {
     require(x >= 0 && x <= Long.MaxValue, s"Argument must be between 0 and ${Long.MaxValue}, inclusive")
     val buf = new Array[Byte](8)
-    for (i ← 0 to 7) {
+    for (i <- 0 to 7) {
       val block = (x >>> i * 7) & 0x7F
       val payload = if (i != 0) block | 0x80 else block
       buf(buf.length - i - 1) = payload.toByte
@@ -17,7 +17,7 @@ object VariableLengthIntegerCodec {
     buf.dropWhile(_ == -128)
   }
 
-  def encode(x: Long, target: ByteBuffer) {
+  def encode(x: Long, target: ByteBuffer): Unit = {
     target.put(encode(x))
   }
 
@@ -37,8 +37,8 @@ object VariableLengthIntegerCodec {
 
   def decode(buf: ByteBuffer): Long = {
     val iterator = ByteBuffers.toIterator(buf)
-    val extendedBytes = iterator.takeWhile(b ⇒ (b & 0x80) != 0).take(maxBlocks)
-    val result = extendedBytes.foldLeft(0L)((r, b) ⇒ {
+    val extendedBytes = iterator.takeWhile(b => (b & 0x80) != 0).take(maxBlocks)
+    val result = extendedBytes.foldLeft(0L)((r, b) => {
       val payload = b & 0x7F
       (r << 7) | payload
     })

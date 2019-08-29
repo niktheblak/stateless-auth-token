@@ -8,13 +8,13 @@ scalaVersion := "2.13.0"
 
 val akkaVersion = "2.5.25"
 
+scalacOptions ++= Seq(
+  "-deprecation"
+)
+
 libraryDependencies ++= Seq(
   "com.typesafe.akka" %% "akka-actor" % akkaVersion,
   "org.jasypt" % "jasypt" % "1.9.3",
   "org.scalatest" %% "scalatest" % "3.0.8" % "test",
   "com.typesafe.akka" %% "akka-testkit" % akkaVersion % "test"
 )
-
-scalariformPreferences := scalariformPreferences.value
-  .setPreference(RewriteArrowSymbols, true)
-  .setPreference(PreserveSpaceBeforeArguments, true)

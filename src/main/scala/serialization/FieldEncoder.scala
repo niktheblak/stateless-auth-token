@@ -9,12 +9,12 @@ import scala.collection.mutable.ListBuffer
 object FieldEncoder {
   def encode(items: Seq[Any]): Array[Byte] = {
     val target = new ByteArrayOutputStream
-    items foreach { item ⇒
+    items foreach { item =>
       DefaultSerializers.serializerFor(item) match {
-        case Some(serializer) ⇒
+        case Some(serializer) =>
           val data = serializer.serialize(item)
           target.write(data)
-        case None ⇒ throw new IllegalArgumentException(s"No serializer found for class ${item.getClass}")
+        case None => throw new IllegalArgumentException(s"No serializer found for class ${item.getClass}")
       }
     }
     target.toByteArray
@@ -35,10 +35,10 @@ object FieldEncoder {
     val idAndSize = java.lang.Byte.toUnsignedInt(source(offset))
     val (id, size) = unpack(idAndSize)
     DefaultSerializers.serializerForId(id) match {
-      case Some(serializer) ⇒
+      case Some(serializer) =>
         val value = serializer.deSerialize(source, offset)
         (value.asInstanceOf[T], size)
-      case None ⇒ throw new IllegalArgumentException(s"No serializer found for serial ID $id")
+      case None => throw new IllegalArgumentException(s"No serializer found for serial ID $id")
     }
   }
 }

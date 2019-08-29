@@ -5,7 +5,7 @@ import encoding.TokenEncoder
 import org.jasypt.encryption.pbe.{ PBEByteCleanablePasswordEncryptor, StandardPBEByteEncryptor }
 import org.jasypt.salt.SaltGenerator
 
-trait JasyptTokenCreator extends EncryptingTokenCreator with Encryptor { self: TokenEncoder ⇒
+trait JasyptTokenCreator extends EncryptingTokenCreator with Encryptor { self: TokenEncoder =>
   val password: Array[Char]
 
   lazy val encryptor: PBEByteCleanablePasswordEncryptor = {
@@ -13,9 +13,9 @@ trait JasyptTokenCreator extends EncryptingTokenCreator with Encryptor { self: T
     encryptor.setAlgorithm("PBEWithMD5AndDES")
     encryptor.setPasswordCharArray(password)
     this match {
-      case gen: SaltGenerator ⇒
+      case gen: SaltGenerator =>
         encryptor.setSaltGenerator(gen)
-      case _ ⇒
+      case _ =>
     }
     encryptor.initialize()
     encryptor

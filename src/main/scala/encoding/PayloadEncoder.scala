@@ -3,7 +3,7 @@ package encoding
 import serialization.InvalidDataException
 import utils.Printables
 
-trait PayloadEncoder { self: TokenEncoder ⇒
+trait PayloadEncoder { self: TokenEncoder =>
   val headerBytes: Array[Byte]
   val versionBytes: Array[Byte]
 
@@ -21,13 +21,13 @@ trait PayloadEncoder { self: TokenEncoder ⇒
     payload.slice(versionEnd, payload.length)
   }
 
-  def checkLength(expectedLength: Int, actualLength: Int, message: String) {
+  def checkLength(expectedLength: Int, actualLength: Int, message: String): Unit = {
     if (actualLength < expectedLength) {
       throw new InvalidDataException(message)
     }
   }
 
-  def checkData(expected: Array[Byte], actual: Array[Byte], message: String) {
+  def checkData(expected: Array[Byte], actual: Array[Byte], message: String): Unit = {
     if (!java.util.Arrays.equals(expected, actual)) {
       throw new InvalidDataException(message)
     }

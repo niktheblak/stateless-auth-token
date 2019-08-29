@@ -10,49 +10,49 @@ class VariableLengthIntegerCodecTest extends FunSpec with Matchers {
   import VariableLengthIntegerCodec._
 
   describe("VariableLengthIntegerCodec") {
-    it ("should encode Wikipedia example number correctly") {
+    it("should encode Wikipedia example number correctly") {
       val x = 137
       val arr = encode(x)
       arr should have length 2
-      toInt(arr(0)) should equal (129)
-      toInt(arr(1)) should equal (9)
+      toInt(arr(0)) should equal(129)
+      toInt(arr(1)) should equal(9)
     }
 
-    it ("should decode Wikipedia example number correctly") {
+    it("should decode Wikipedia example number correctly") {
       val arr = Array(toUnsignedByte(129), toUnsignedByte(9))
       val x = decode(arr, 0)
-      x should equal (137)
+      x should equal(137)
     }
 
-    it ("should encode a two-byte integer correctly") {
+    it("should encode a two-byte integer correctly") {
       val x = 10292290
       val arr = encode(x)
       arr should have length 4
-      toInt(arr(0)) should equal (132)
-      toInt(arr(1)) should equal (244)
-      toInt(arr(2)) should equal (152)
-      toInt(arr(3)) should equal (66)
-      decode(arr) should equal (x)
+      toInt(arr(0)) should equal(132)
+      toInt(arr(1)) should equal(244)
+      toInt(arr(2)) should equal(152)
+      toInt(arr(3)) should equal(66)
+      decode(arr) should equal(x)
     }
 
-    it ("should encode one-byte integer correctly") {
+    it("should encode one-byte integer correctly") {
       val x = 107
       val arr = encode(x)
-      toInt(arr(0)) should equal (107)
+      toInt(arr(0)) should equal(107)
       arr should have length 1
-      decode(arr) should equal (x)
+      decode(arr) should equal(x)
     }
 
-    it ("should throw when decoding too large data from ByteBuffer") {
+    it("should throw when decoding too large data from ByteBuffer") {
       val data = Array(-4.toByte, -4.toByte, -4.toByte, -4.toByte, -4.toByte, -4.toByte, -4.toByte, -4.toByte, -4.toByte)
       val buf = ByteBuffer.wrap(data)
       an[InvalidDataException] should be thrownBy { decode(buf) }
     }
 
-    it ("should round-trip encode random numbers correctly") {
+    it("should round-trip encode random numbers correctly") {
       val numbers = randomNumbers.take(1000)
-      numbers foreach { n ⇒
-        decode(encode(n), 0) should equal (n)
+      numbers foreach { n =>
+        decode(encode(n), 0) should equal(n)
       }
     }
 

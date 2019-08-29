@@ -4,7 +4,7 @@ import auth.{ Authentication, AuthenticationException }
 import crypto.Encryptor
 import encoding.{ Base58StringEncoder, PayloadEncoder, TokenEncoder }
 
-trait EncryptingTokenCreator extends PayloadEncoder with Base58StringEncoder { self: TokenEncoder with Encryptor ⇒
+trait EncryptingTokenCreator extends PayloadEncoder with Base58StringEncoder { self: TokenEncoder with Encryptor =>
   def createToken(auth: Authentication): Array[Byte] = {
     val encodedToken: Array[Byte] = encodeToken(auth)
     val payload = encodePayload(encodedToken)
@@ -17,7 +17,7 @@ trait EncryptingTokenCreator extends PayloadEncoder with Base58StringEncoder { s
       val payload = decodePayload(decrypted)
       decodeToken(payload)
     } catch {
-      case e: Exception ⇒ throw new AuthenticationException("Error while decoding token data", e)
+      case e: Exception => throw new AuthenticationException("Error while decoding token data", e)
     }
   }
 

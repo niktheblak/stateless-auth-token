@@ -4,7 +4,7 @@ import crypto.{ AESSharedKeyEncryptor, Encryptor }
 import encoding.TokenEncoder
 import org.jasypt.salt.SaltGenerator
 
-trait AESTokenCreator extends EncryptingTokenCreator with AESSharedKeyEncryptor with Encryptor with SaltGenerator { self: TokenEncoder ⇒
+trait AESTokenCreator extends EncryptingTokenCreator with AESSharedKeyEncryptor with Encryptor with SaltGenerator { self: TokenEncoder =>
   val saltLength = 8
   val password: Array[Char]
 
