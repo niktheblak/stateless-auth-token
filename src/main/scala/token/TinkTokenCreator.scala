@@ -1,15 +1,14 @@
 package token
 
-import com.google.crypto.tink.aead.{ AeadConfig, AeadKeyTemplates }
-import com.google.crypto.tink.{ Aead, KeysetHandle }
+import com.google.crypto.tink.Aead
+import com.google.crypto.tink.aead.AeadConfig
 import crypto.Encryptor
 import encoding.TokenEncoder
 
-trait TinkTokenCreator extends EncryptingTokenCreator with Encryptor { self: TokenEncoder =>
+trait TinkTokenCreator extends EncryptingTokenCreator with Encryptor { self: TokenEncoder with AeadProvider =>
   lazy val encryptor: Aead = {
     AeadConfig.register()
-    val keysetHandle = KeysetHandle.generateNew(AeadKeyTemplates.AES128_GCM)
-    keysetHandle.getPrimitive(classOf[Aead])
+    getAead
   }
 
   override def encrypt(data: Array[Byte]): Array[Byte] = {

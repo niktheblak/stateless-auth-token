@@ -5,10 +5,7 @@ import java.time.Instant
 import auth.{ Authentication, Roles }
 import org.scalatest.{ FlatSpec, Matchers }
 
-object TestDefaultTokenCreator extends DefaultTokenCreator {
-  override def generateSalt(lengthBytes: Int): Array[Byte] =
-    new Array[Byte](lengthBytes)
-}
+object TestDefaultTokenCreator extends DefaultTokenCreator {}
 
 class DefaultTokenCreatorTest extends FlatSpec with Matchers {
   import TestDefaultTokenCreator._
