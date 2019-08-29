@@ -28,7 +28,7 @@ object FieldEncoder {
       position += size + 1
       buf += item
     }
-    buf
+    buf.toSeq
   }
 
   private def decodeItem[T](source: Array[Byte], offset: Int): (T, Int) = {

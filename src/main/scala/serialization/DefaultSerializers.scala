@@ -13,8 +13,7 @@ object DefaultSerializers {
   private val serializers: Map[Int, BinarySerializer[_]] = Map(
     StringSerializer.identifier → new StringSerializer,
     LongSerializer.identifier → new LongSerializer,
-    RoleSerializer.identifier → new RoleSerializer
-  )
+    RoleSerializer.identifier → new RoleSerializer)
 
   def serializerFor[T](obj: T): Option[BinarySerializer[T]] = {
     require(obj != null)
@@ -47,8 +46,7 @@ object DefaultSerializers {
       val bytes = obj.getBytes(encodingCharset)
       require(
         bytes.length <= BinaryUtils.maxSizeLength,
-        s"Source string is ${bytes.length} bytes with $encodingCharset encoding, maximum is ${BinaryUtils.maxSizeLength} bytes"
-      )
+        s"Source string is ${bytes.length} bytes with $encodingCharset encoding, maximum is ${BinaryUtils.maxSizeLength} bytes")
       val idAndSize = pack(identifier, bytes.length)
       Array(idAndSize.toByte) ++ bytes
     }

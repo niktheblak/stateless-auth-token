@@ -1,6 +1,6 @@
 package token
 
-import crypto.{AESSharedKeyEncryptor, Encryptor}
+import crypto.{ AESSharedKeyEncryptor, Encryptor }
 import encoding.TokenEncoder
 import org.jasypt.salt.SaltGenerator
 
