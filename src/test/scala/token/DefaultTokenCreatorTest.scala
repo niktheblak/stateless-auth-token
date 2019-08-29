@@ -1,6 +1,6 @@
 package token
 
-import java.util.Calendar
+import java.time.Instant
 
 import auth.{ Authentication, Roles }
 import org.scalatest.{ FlatSpec, Matchers }
@@ -14,9 +14,8 @@ class DefaultTokenCreatorTest extends FlatSpec with Matchers {
   import TestDefaultTokenCreator._
 
   "tokens.DefaultTokenCreator" should "encode and decode token" in {
-    val expTime = Calendar.getInstance()
-    expTime.add(Calendar.HOUR_OF_DAY, 1)
-    val auth = Authentication("testUser", Roles.User, expTime.getTime)
+    val now = Instant.now()
+    val auth = Authentication("testUser", Roles.User, now.plusSeconds(3600))
     val token = createTokenString(auth)
     val decoded = readTokenString(token)
     decoded.userId should equal(auth.userId)

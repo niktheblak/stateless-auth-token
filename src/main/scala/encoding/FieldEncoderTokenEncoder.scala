@@ -1,13 +1,13 @@
 package encoding
 
-import java.util.Date
+import java.time.Instant
 
 import auth.{ Authentication, Roles }
 import serialization.{ FieldEncoder, InvalidDataException }
 
 trait FieldEncoderTokenEncoder extends TokenEncoder {
   override def encodeToken(auth: Authentication): Array[Byte] = {
-    val items: Seq[Any] = Seq(auth.userId, auth.role, auth.expirationTime.getTime)
+    val items: Seq[Any] = Seq(auth.userId, auth.role, auth.expirationTime.toEpochMilli)
     FieldEncoder.encode(items)
   }
 
@@ -19,6 +19,6 @@ trait FieldEncoderTokenEncoder extends TokenEncoder {
     val userId = fields.head.asInstanceOf[String]
     val role = fields(1).asInstanceOf[Roles.Role]
     val expirationTime = fields(2).asInstanceOf[Long]
-    Authentication(userId, role, new Date(expirationTime))
+    Authentication(userId, role, Instant.ofEpochMilli(expirationTime))
   }
 }

@@ -1,12 +1,11 @@
-import java.util.Calendar
+import java.time.Instant
 
 import auth.{ Authentication, Roles }
 import token._
 
 object CLI extends App with DefaultTokenCreator {
-  val expTime = Calendar.getInstance()
-  expTime.add(Calendar.HOUR_OF_DAY, 1)
-  val token = createTokenString(Authentication("testUser", Roles.User, expTime.getTime))
+  val now = Instant.now()
+  val token = createTokenString(Authentication("testUser", Roles.User, now.plusSeconds(3600)))
   println(s"Token length: ${token.length} bytes")
   println(s"Token: $token")
   val decoded = readTokenString(token)

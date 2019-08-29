@@ -1,7 +1,7 @@
 package encoding
 
 import java.nio.ByteBuffer
-import java.util.Date
+import java.time.Instant
 
 import auth.Authentication
 import serialization.DefaultSerializers
@@ -17,7 +17,7 @@ trait VariableLengthIntegerTokenEncoder extends TokenEncoder {
       userIdBytes ++
       encode(roleBytes.length) ++
       roleBytes ++
-      encode(auth.expirationTime.getTime)
+      encode(auth.expirationTime.toEpochMilli)
   }
 
   override def decodeToken(tokenData: Array[Byte]): Authentication = {
@@ -31,6 +31,6 @@ trait VariableLengthIntegerTokenEncoder extends TokenEncoder {
     buffer.get(roleBytes)
     val role = roleSerializer.deSerialize(roleBytes, 0)
     val expirationTime = decode(buffer)
-    Authentication(userId, role, new Date(expirationTime))
+    Authentication(userId, role, Instant.ofEpochMilli(expirationTime))
   }
 }

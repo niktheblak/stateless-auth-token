@@ -1,5 +1,5 @@
 package auth
 
-import java.util.Date
+import java.time.Instant
 
-case class Authentication(userId: String, role: Roles.Role, expirationTime: Date)
+case class Authentication(userId: String, role: Roles.Role, expirationTime: Instant)

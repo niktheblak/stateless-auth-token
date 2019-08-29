@@ -33,9 +33,8 @@ Select `CLI` from the options provided by SBT
 
 Start a token generation web service:
 
-    $ sbt run
-
-Select `service.SprayBootstrap` from the options provided by SBT.
+    $ sbt
+    $ > jetty:start
 
 After this you have the following REST API available on `http://localhost:8080`:
 
@@ -47,7 +46,7 @@ Generates an access token with the given user ID and user role encoded in it.
 
 Parameter | Explanation
 --------- | -----------
-userId    | User ID to be encoded in the token
+user_id   | User ID to be encoded in the token
 role      | User role to be encoded in the token
 
 Response: Encoded access token
