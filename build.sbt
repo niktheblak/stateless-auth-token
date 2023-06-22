@@ -6,7 +6,7 @@ scalaVersion := "2.13.0"
 
 val akkaVersion = "2.5.25"
 
-val ScalatraVersion = "2.7.0-RC1"
+val ScalatraVersion = "2.8.4"
 
 scalacOptions ++= Seq(
   "-deprecation"
