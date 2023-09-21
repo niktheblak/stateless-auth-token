@@ -4,7 +4,7 @@ version := "1.0.0-SNAPSHOT"
 
 scalaVersion := "2.13.0"
 
-val akkaVersion = "2.5.25"
+val akkaVersion = "2.8.5"
 
 val ScalatraVersion = "2.7.0-RC1"
 
