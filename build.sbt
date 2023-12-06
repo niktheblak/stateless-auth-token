@@ -16,7 +16,7 @@ resolvers += Classpaths.typesafeReleases
 
 libraryDependencies ++= Seq(
   "com.typesafe.akka" %% "akka-actor" % akkaVersion,
-  "com.google.crypto.tink" % "tink" % "1.3.0-rc1",
+  "com.google.crypto.tink" % "tink" % "1.12.0",
   "javax.servlet" % "javax.servlet-api" % "4.0.1",
   "org.scalatra" %% "scalatra" % ScalatraVersion,
   "org.scalatra" %% "scalatra-scalatest" % ScalatraVersion % "test",
