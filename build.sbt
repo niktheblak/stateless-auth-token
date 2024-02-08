@@ -20,7 +20,7 @@ libraryDependencies ++= Seq(
   "javax.servlet" % "javax.servlet-api" % "4.0.1",
   "org.scalatra" %% "scalatra" % ScalatraVersion,
   "org.scalatra" %% "scalatra-scalatest" % ScalatraVersion % "test",
-  "org.scalatest" %% "scalatest" % "3.0.8" % "test",
+  "org.scalatest" %% "scalatest" % "3.2.18" % "test",
   "com.typesafe.akka" %% "akka-testkit" % akkaVersion % "test"
 )
 
