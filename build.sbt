@@ -2,7 +2,7 @@ name := "stateless-auth-token"
 
 version := "1.0.0-SNAPSHOT"
 
-scalaVersion := "2.13.0"
+scalaVersion := "3.9.0"
 
 val akkaVersion = "2.5.25"
 
